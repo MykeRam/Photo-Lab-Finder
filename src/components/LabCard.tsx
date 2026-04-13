@@ -1,24 +1,42 @@
+import { Link } from "react-router-dom";
 import { serviceLabels } from "../data/labs";
 import type { PhotoLab } from "../types";
 
 type LabCardProps = {
-  lab: PhotoLab;
+  detailHref: string;
   isFavorite: boolean;
+  lab: PhotoLab;
+  layout: "card" | "row";
+  note?: string;
   onToggleFavorite: (id: string) => void;
 };
 
-export function LabCard({ lab, isFavorite, onToggleFavorite }: LabCardProps) {
+export function LabCard({
+  detailHref,
+  isFavorite,
+  lab,
+  layout,
+  note,
+  onToggleFavorite,
+}: LabCardProps) {
+  const cardClassName = layout === "row" ? "lab-card lab-card--row" : "lab-card";
+
   return (
-    <article className="lab-card">
+    <article className={cardClassName}>
       <img className="lab-card__image" src={lab.imageUrl} alt={lab.name} />
       <div className="lab-card__content">
         <div className="lab-card__heading">
           <div>
             <p className="lab-card__eyebrow">
-              {lab.city}, {lab.region} · {lab.neighborhood}
+              {lab.borough} · {lab.neighborhood}
             </p>
-            <h2>{lab.name}</h2>
+            <h2>
+              <Link className="text-link" to={detailHref}>
+                {lab.name}
+              </Link>
+            </h2>
           </div>
+
           <button
             type="button"
             className={isFavorite ? "favorite-button favorite-button--active" : "favorite-button"}
@@ -32,7 +50,7 @@ export function LabCard({ lab, isFavorite, onToggleFavorite }: LabCardProps) {
         <p className="lab-card__description">{lab.description}</p>
 
         <div className="lab-card__meta">
-          <span>{lab.distanceMiles} mi away</span>
+          <span>{lab.address}</span>
           <span>{lab.turnaround} turnaround</span>
           <span>{lab.priceTier}</span>
           <span>{lab.rating.toFixed(1)} rating</span>
@@ -45,6 +63,12 @@ export function LabCard({ lab, isFavorite, onToggleFavorite }: LabCardProps) {
             </span>
           ))}
         </div>
+
+        {note ? <p className="lab-card__note">Note: {note}</p> : null}
+
+        <Link className="detail-link" to={detailHref}>
+          View lab details
+        </Link>
       </div>
     </article>
   );

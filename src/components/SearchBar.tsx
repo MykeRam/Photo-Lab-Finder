@@ -6,12 +6,12 @@ type SearchBarProps = {
 export function SearchBar({ query, onQueryChange }: SearchBarProps) {
   return (
     <label className="search-bar">
-      <span className="search-bar__label">Search labs, cities, or neighborhoods</span>
+      <span className="search-bar__label">Search by borough or neighborhood</span>
       <input
         className="search-bar__input"
         type="search"
         value={query}
-        placeholder="Try Brooklyn, scans, or same-day"
+        placeholder="Try Brooklyn, Astoria, or Chelsea"
         onChange={(event) => onQueryChange(event.target.value)}
       />
     </label>
