@@ -1,5 +1,6 @@
 import {
   buildDescription,
+  calculateDistanceMiles,
   createFallbackCoordinates,
   encodeLabId,
   extractFoursquareAddressParts,
@@ -52,7 +53,7 @@ function mapFoursquareSpecialties(place, services) {
   return Array.from(new Set([...serviceNames, ...categoryNames]));
 }
 
-function mapFoursquarePlace(place, matchedServices) {
+function mapFoursquarePlace(place, matchedServices, origin = null) {
   const parts = extractFoursquareAddressParts(place.location);
   const searchableText = [
     place.name,
@@ -63,6 +64,8 @@ function mapFoursquarePlace(place, matchedServices) {
     .filter(Boolean)
     .join(" ");
   const services = inferServicesFromText(searchableText, matchedServices);
+
+  const coordinates = createFallbackCoordinates(place.geocodes?.main);
 
   return {
     id: encodeLabId("foursquare", place.fsq_id),
@@ -86,7 +89,8 @@ function mapFoursquarePlace(place, matchedServices) {
     turnaround: mapTurnaround(services),
     priceTier: mapPriceTier(place.price),
     rating: Number(place.rating ?? 0),
-    coordinates: createFallbackCoordinates(place.geocodes?.main),
+    coordinates,
+    distanceMiles: calculateDistanceMiles(origin, coordinates),
     imageUrl: mapFoursquareImage(place.photos),
     specialties: mapFoursquareSpecialties(place, services),
     hours: mapFoursquareHours(place.hours),
@@ -96,14 +100,21 @@ function mapFoursquarePlace(place, matchedServices) {
   };
 }
 
-export async function searchFoursquareLabs({ apiKey, query, services }) {
+export async function searchFoursquareLabs({ apiKey, latitude, longitude, query, services }) {
   const areaQuery = normalizeAreaQuery(query);
   const requestedServices = getRequestedServices(services);
+  const origin =
+    latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null;
 
   const requests = requestedServices.map(async (service) => {
     const url = new URL(FOURSQUARE_SEARCH_URL);
     url.searchParams.set("query", SERVICE_QUERY_MAP[service]);
-    url.searchParams.set("near", `${areaQuery}, NY`);
+    if (origin) {
+      url.searchParams.set("ll", `${origin.lat},${origin.lng}`);
+      url.searchParams.set("radius", "12000");
+    } else {
+      url.searchParams.set("near", `${areaQuery}, NY`);
+    }
     url.searchParams.set("limit", "8");
     url.searchParams.set(
       "fields",
@@ -143,12 +154,12 @@ export async function searchFoursquareLabs({ apiKey, query, services }) {
           return null;
         }
 
-        return mapFoursquarePlace(place, [service]);
+        return mapFoursquarePlace(place, [service], origin);
       })
       .filter(Boolean);
   });
 
-  return uniqueLabs((await Promise.all(requests)).flat());
+  return uniqueLabs((await Promise.all(requests)).flat(), origin);
 }
 
 export async function getFoursquareLabById({ apiKey, sourceId }) {

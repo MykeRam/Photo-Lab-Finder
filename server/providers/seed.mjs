@@ -1,15 +1,18 @@
-import { encodeLabId } from "../lib/place-utils.mjs";
+import { calculateDistanceMiles, encodeLabId } from "../lib/place-utils.mjs";
 import { seedLabs } from "../data/seed-labs.mjs";
 
-function mapSeedLab(lab) {
+function mapSeedLab(lab, origin = null) {
   return {
     ...lab,
+    distanceMiles: calculateDistanceMiles(origin, lab.coordinates),
     id: encodeLabId("seed", lab.sourceId),
   };
 }
 
-export async function searchSeedLabs({ query, services }) {
+export async function searchSeedLabs({ latitude, longitude, query, services }) {
   const normalizedQuery = query.trim().toLowerCase();
+  const origin =
+    latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null;
 
   return seedLabs.filter((lab) => {
     const matchesQuery =
@@ -20,7 +23,7 @@ export async function searchSeedLabs({ query, services }) {
       services.length === 0 || services.every((service) => lab.services.includes(service));
 
     return matchesQuery && matchesServices;
-  }).map(mapSeedLab);
+  }).map((lab) => mapSeedLab(lab, origin));
 }
 
 export async function getSeedLabById(sourceId) {

@@ -10,7 +10,12 @@ type UseLabsState = {
   usedFallback: boolean;
 };
 
-export function useLabs(query: string, services: LabService[]) {
+export function useLabs(
+  query: string,
+  services: LabService[],
+  latitude: number | null,
+  longitude: number | null,
+) {
   const [state, setState] = useState<UseLabsState>({
     error: null,
     isLoading: true,
@@ -28,7 +33,7 @@ export function useLabs(query: string, services: LabService[]) {
       isLoading: true,
     }));
 
-    fetchLabs({ query, services }, controller.signal)
+    fetchLabs({ query, services, latitude, longitude }, controller.signal)
       .then((payload) => {
         setState({
           error: null,
@@ -55,7 +60,7 @@ export function useLabs(query: string, services: LabService[]) {
     return () => {
       controller.abort();
     };
-  }, [query, services]);
+  }, [latitude, longitude, query, services]);
 
   return state;
 }

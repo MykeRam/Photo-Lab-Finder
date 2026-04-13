@@ -58,6 +58,7 @@ export function LabCard({
 
         <div className="lab-card__meta">
           <span>{lab.address}</span>
+          {lab.distanceMiles !== null ? <span>{lab.distanceMiles.toFixed(1)} miles away</span> : null}
           <span>{lab.turnaround} turnaround</span>
           <span>{lab.priceTier}</span>
           <span>{lab.rating > 0 ? `${lab.rating.toFixed(1)} rating` : "No ratings yet"}</span>

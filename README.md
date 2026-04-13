@@ -5,7 +5,7 @@ A location-based web app that helps users find and compare photography labs by a
 
 NYC-only routed MVP with:
 
-- borough and neighborhood search
+- borough, neighborhood, ZIP, and current-location search
 - service filters for develop, scan, prints, and same-day
 - cards view plus map/list view
 - detail pages for each lab

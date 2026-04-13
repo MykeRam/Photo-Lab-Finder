@@ -217,6 +217,51 @@ img {
   outline-offset: 2px;
 }
 
+.location-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.location-controls__buttons {
+  display: grid;
+  gap: 8px;
+}
+
+.action-button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 25, 20, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  color: #1e1914;
+}
+
+.action-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.action-button--active {
+  border-color: #1d8b7e;
+  background: #1d8b7e;
+  color: #fffaf3;
+}
+
+.panel__hint,
+.panel__error {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.panel__hint {
+  color: rgba(30, 25, 20, 0.7);
+}
+
+.panel__error {
+  color: #8d3e2c;
+}
+
 .filter-group {
   display: flex;
   flex-wrap: wrap;

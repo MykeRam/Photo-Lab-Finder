@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { decodeLabId } from "./lib/place-utils.mjs";
+import { decodeLabId, isCoordinateWithinNyc } from "./lib/place-utils.mjs";
 import { getFoursquareLabById, searchFoursquareLabs } from "./providers/foursquare.mjs";
 import { getGoogleLabById, searchGoogleLabs } from "./providers/google.mjs";
 import { getSeedLabById, searchSeedLabs } from "./providers/seed.mjs";
@@ -22,7 +22,16 @@ function getProviderOrder() {
 }
 
 function getSearchInput(url) {
+  const latitudeParam = url.searchParams.get("lat");
+  const longitudeParam = url.searchParams.get("lng");
+  const parsedLatitude = latitudeParam ? Number(latitudeParam) : null;
+  const parsedLongitude = longitudeParam ? Number(longitudeParam) : null;
+  const latitude = Number.isFinite(parsedLatitude) ? parsedLatitude : null;
+  const longitude = Number.isFinite(parsedLongitude) ? parsedLongitude : null;
+
   return {
+    latitude,
+    longitude,
     query: url.searchParams.get("q") ?? "",
     services: (url.searchParams.get("services") ?? "")
       .split(",")
@@ -32,6 +41,16 @@ function getSearchInput(url) {
 }
 
 async function searchLabs(input) {
+  if (
+    input.latitude !== null &&
+    input.longitude !== null &&
+    !isCoordinateWithinNyc(input.latitude, input.longitude)
+  ) {
+    const error = new Error("Current location must be within New York City for this app.");
+    error.statusCode = 400;
+    throw error;
+  }
+
   const providerOrder = getProviderOrder();
 
   for (const provider of providerOrder) {
@@ -110,7 +129,9 @@ const server = createServer(async (request, response) => {
       sendJson(response, 200, await searchLabs(getSearchInput(url)));
     } catch (error) {
       console.error("[api/labs]", error);
-      sendJson(response, 500, { message: "Unable to load NYC photo labs right now." });
+      sendJson(response, error.statusCode ?? 500, {
+        message: error.message ?? "Unable to load NYC photo labs right now.",
+      });
     }
     return;
   }

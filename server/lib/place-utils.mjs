@@ -1,4 +1,10 @@
 const NYC_CENTER = { lat: 40.7128, lng: -74.006 };
+const NYC_BOUNDS = {
+  minLat: 40.4774,
+  maxLat: 40.9176,
+  minLng: -74.2591,
+  maxLng: -73.7004,
+};
 
 export const SERVICE_QUERY_MAP = {
   develop: "film developing lab",
@@ -28,6 +34,17 @@ export function normalizeAreaQuery(query) {
   return /new york|nyc|brooklyn|queens|bronx|manhattan|staten island/i.test(trimmed)
     ? trimmed
     : `${trimmed}, New York City`;
+}
+
+export function isCoordinateWithinNyc(latitude, longitude) {
+  return (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    latitude >= NYC_BOUNDS.minLat &&
+    latitude <= NYC_BOUNDS.maxLat &&
+    longitude >= NYC_BOUNDS.minLng &&
+    longitude <= NYC_BOUNDS.maxLng
+  );
 }
 
 export function isWithinNyc(address = "", borough = "", neighborhood = "") {
@@ -193,7 +210,26 @@ export function createFallbackCoordinates(location) {
   };
 }
 
-export function uniqueLabs(labs) {
+export function calculateDistanceMiles(origin, destination) {
+  if (!origin) {
+    return null;
+  }
+
+  const toRadians = (value) => (value * Math.PI) / 180;
+  const earthRadiusMiles = 3958.8;
+  const deltaLat = toRadians(destination.lat - origin.lat);
+  const deltaLng = toRadians(destination.lng - origin.lng);
+  const lat1 = toRadians(origin.lat);
+  const lat2 = toRadians(destination.lat);
+
+  const a =
+    Math.sin(deltaLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) ** 2;
+
+  return 2 * earthRadiusMiles * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+export function uniqueLabs(labs, origin = null) {
   const merged = new Map();
 
   for (const lab of labs) {
@@ -216,5 +252,11 @@ export function uniqueLabs(labs) {
     });
   }
 
-  return Array.from(merged.values()).sort((left, right) => right.rating - left.rating);
+  return Array.from(merged.values()).sort((left, right) => {
+    if (origin && left.distanceMiles !== null && right.distanceMiles !== null) {
+      return left.distanceMiles - right.distanceMiles;
+    }
+
+    return right.rating - left.rating;
+  });
 }

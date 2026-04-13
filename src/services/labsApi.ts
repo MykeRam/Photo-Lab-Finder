@@ -22,6 +22,11 @@ export function fetchLabs(input: LabSearchInput, signal?: AbortSignal) {
     params.set("services", input.services.join(","));
   }
 
+  if (input.latitude !== null && input.longitude !== null) {
+    params.set("lat", String(input.latitude));
+    params.set("lng", String(input.longitude));
+  }
+
   return requestJson<LabSearchResponse>(`/api/labs?${params.toString()}`, { signal });
 }
 

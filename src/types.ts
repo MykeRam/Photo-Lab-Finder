@@ -11,6 +11,8 @@ export type LabSource = "google" | "foursquare" | "seed";
 export type LabSearchInput = {
   query: string;
   services: LabService[];
+  latitude: number | null;
+  longitude: number | null;
 };
 
 export type LabSearchResponse = {
@@ -37,6 +39,7 @@ export type PhotoLab = {
     lat: number;
     lng: number;
   };
+  distanceMiles: number | null;
   imageUrl: string | null;
   specialties: string[];
   hours: string;

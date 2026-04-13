@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { createSearchParams, useSearchParams } from "react-router-dom";
 import { FilterGroup } from "../components/FilterGroup";
 import { LabCard } from "../components/LabCard";
+import { LocationControls } from "../components/LocationControls";
 import { MapPanel } from "../components/MapPanel";
 import { SearchBar } from "../components/SearchBar";
 import { StatePanel } from "../components/StatePanel";
 import { ViewToggle } from "../components/ViewToggle";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
+import { useCurrentLocation } from "../hooks/useCurrentLocation";
 import { useLabs } from "../hooks/useLabs";
 import type { LabService, NoteMap, ViewMode } from "../types";
 
@@ -40,8 +42,21 @@ export function HomePage({
   const servicesParam = searchParams.get("services");
   const activeServices = useMemo(() => parseServices(servicesParam), [servicesParam]);
   const viewMode = searchParams.get("view") === "map" ? "map" : "cards";
+  const latitudeParam = searchParams.get("lat");
+  const longitudeParam = searchParams.get("lng");
+  const parsedLatitude = latitudeParam ? Number(latitudeParam) : null;
+  const parsedLongitude = longitudeParam ? Number(longitudeParam) : null;
+  const latitude = Number.isFinite(parsedLatitude) ? parsedLatitude : null;
+  const longitude = Number.isFinite(parsedLongitude) ? parsedLongitude : null;
+  const hasCurrentLocation = latitude !== null && longitude !== null;
   const debouncedQuery = useDebouncedValue(query, 350);
-  const { error, isLoading, labs, provider, usedFallback } = useLabs(debouncedQuery, activeServices);
+  const { clearLocationError, isLocating, locationError, requestCurrentLocation } = useCurrentLocation();
+  const { error, isLoading, labs, provider, usedFallback } = useLabs(
+    debouncedQuery,
+    activeServices,
+    latitude,
+    longitude,
+  );
   const filteredLabs = labs;
 
   useEffect(() => {
@@ -55,12 +70,22 @@ export function HomePage({
     }
   }, [filteredLabs, selectedLabId]);
 
-  function updateSearchParams(next: { q?: string; services?: LabService[]; view?: ViewMode }) {
+  function updateSearchParams(next: {
+    latitude?: number | null;
+    longitude?: number | null;
+    q?: string;
+    services?: LabService[];
+    view?: ViewMode;
+  }) {
     const params = createSearchParams();
 
     const nextQuery = next.q ?? query;
     const nextServices = next.services ?? activeServices;
     const nextView = next.view ?? viewMode;
+    const nextLatitude =
+      next.latitude === undefined ? latitude : next.latitude;
+    const nextLongitude =
+      next.longitude === undefined ? longitude : next.longitude;
 
     if (nextQuery.trim()) {
       params.set("q", nextQuery.trim());
@@ -74,6 +99,11 @@ export function HomePage({
       params.set("view", "map");
     }
 
+    if (nextLatitude !== null && nextLongitude !== null) {
+      params.set("lat", String(nextLatitude));
+      params.set("lng", String(nextLongitude));
+    }
+
     setSearchParams(params, { replace: true });
   }
 
@@ -83,6 +113,27 @@ export function HomePage({
       : [...activeServices, service];
 
     updateSearchParams({ services: nextServices });
+  }
+
+  async function handleUseCurrentLocation() {
+    try {
+      const coordinates = await requestCurrentLocation();
+      updateSearchParams({
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        q: "",
+      });
+    } catch {
+      return;
+    }
+  }
+
+  function handleClearCurrentLocation() {
+    clearLocationError();
+    updateSearchParams({
+      latitude: null,
+      longitude: null,
+    });
   }
 
   const detailSearch = searchParams.toString().length > 0 ? `?${searchParams.toString()}` : "";
@@ -95,15 +146,31 @@ export function HomePage({
           <h1>Compare NYC photo labs without losing your shortlist.</h1>
         </div>
         <p className="hero-panel__copy">
-          Search by borough or neighborhood inside New York City, switch between cards and a map/list
-          split, then save labs and keep personal notes for the next roll.
+          Search by borough, neighborhood, ZIP, or your current location inside New York City, switch
+          between cards and a map/list split, then save labs and keep personal notes for the next roll.
         </p>
       </section>
 
       <div className="workspace-layout">
         <aside className="control-column">
           <section className="panel">
-            <SearchBar query={query} onQueryChange={(value) => updateSearchParams({ q: value })} />
+            <SearchBar
+              query={query}
+              onQueryChange={(value) =>
+                updateSearchParams({
+                  latitude: null,
+                  longitude: null,
+                  q: value,
+                })
+              }
+            />
+            <LocationControls
+              hasCurrentLocation={hasCurrentLocation}
+              isLocating={isLocating}
+              locationError={locationError}
+              onClearCurrentLocation={handleClearCurrentLocation}
+              onUseCurrentLocation={handleUseCurrentLocation}
+            />
             <FilterGroup activeServices={activeServices} onToggle={handleToggleService} />
             <ViewToggle value={viewMode} onChange={(mode) => updateSearchParams({ view: mode })} />
           </section>
@@ -120,6 +187,10 @@ export function HomePage({
             <div className="panel panel--stat">
               <span>Provider</span>
               <strong>{provider ?? "..."}</strong>
+            </div>
+            <div className="panel panel--stat">
+              <span>Search Mode</span>
+              <strong>{hasCurrentLocation ? "Nearby" : "Area"}</strong>
             </div>
             <div className="panel panel--stat">
               <span>Fallback</span>
@@ -143,7 +214,7 @@ export function HomePage({
           {!isLoading && !error && filteredLabs.length === 0 ? (
             <StatePanel
               title="No matching labs"
-              body="Try a different borough, a nearby neighborhood, or fewer service filters."
+              body="Try a different NYC area, another ZIP code, your current location, or fewer service filters."
             />
           ) : null}
 

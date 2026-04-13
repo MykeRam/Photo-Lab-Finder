@@ -1,5 +1,6 @@
 import {
   buildDescription,
+  calculateDistanceMiles,
   createFallbackCoordinates,
   encodeLabId,
   extractGoogleAddressParts,
@@ -64,7 +65,7 @@ function mapGoogleSpecialties(place, services) {
   return Array.from(new Set([...serviceNames, ...typeNames]));
 }
 
-async function mapGooglePlace(place, apiKey, matchedServices) {
+async function mapGooglePlace(place, apiKey, matchedServices, origin = null) {
   const parts = extractGoogleAddressParts(place.addressComponents, place.formattedAddress);
   const searchableText = [
     place.displayName?.text,
@@ -77,6 +78,8 @@ async function mapGooglePlace(place, apiKey, matchedServices) {
     .join(" ");
   const services = inferServicesFromText(searchableText, matchedServices);
   const imageUrl = place.photos?.[0]?.name ? await getGooglePhotoUri(apiKey, place.photos[0].name) : null;
+
+  const coordinates = createFallbackCoordinates(place.location);
 
   return {
     id: encodeLabId("google", place.id),
@@ -100,7 +103,8 @@ async function mapGooglePlace(place, apiKey, matchedServices) {
     turnaround: mapTurnaround(services),
     priceTier: mapPriceTier(place.priceLevel),
     rating: Number(place.rating ?? 0),
-    coordinates: createFallbackCoordinates(place.location),
+    coordinates,
+    distanceMiles: calculateDistanceMiles(origin, coordinates),
     imageUrl,
     specialties: mapGoogleSpecialties(place, services),
     hours: mapGoogleHours(place.regularOpeningHours),
@@ -110,9 +114,11 @@ async function mapGooglePlace(place, apiKey, matchedServices) {
   };
 }
 
-export async function searchGoogleLabs({ apiKey, query, services }) {
+export async function searchGoogleLabs({ apiKey, latitude, longitude, query, services }) {
   const areaQuery = normalizeAreaQuery(query);
   const requestedServices = getRequestedServices(services);
+  const origin =
+    latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null;
 
   const requests = requestedServices.map(async (service) => {
     const response = await fetch(GOOGLE_SEARCH_URL, {
@@ -143,10 +149,10 @@ export async function searchGoogleLabs({ apiKey, query, services }) {
         locationBias: {
           circle: {
             center: {
-              latitude: 40.7128,
-              longitude: -74.006,
+              latitude: origin?.lat ?? 40.7128,
+              longitude: origin?.lng ?? -74.006,
             },
-            radius: 22000,
+            radius: origin ? 12000 : 22000,
           },
         },
       }),
@@ -167,14 +173,14 @@ export async function searchGoogleLabs({ apiKey, query, services }) {
           return null;
         }
 
-        return mapGooglePlace(place, apiKey, [service]);
+        return mapGooglePlace(place, apiKey, [service], origin);
       }),
     );
 
     return mapped.filter(Boolean);
   });
 
-  return uniqueLabs((await Promise.all(requests)).flat());
+  return uniqueLabs((await Promise.all(requests)).flat(), origin);
 }
 
 export async function getGoogleLabById({ apiKey, sourceId }) {
