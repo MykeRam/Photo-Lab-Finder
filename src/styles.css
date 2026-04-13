@@ -314,6 +314,16 @@ img {
   object-fit: cover;
 }
 
+.lab-card__image--placeholder,
+.detail-hero__image--placeholder {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 18px;
+  background: linear-gradient(180deg, #e7dcc6 0%, #cf7450 100%);
+  color: #fffaf3;
+}
+
 .lab-card__content {
   display: grid;
   gap: 14px;

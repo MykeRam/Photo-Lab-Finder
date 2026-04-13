@@ -23,7 +23,14 @@ export function LabCard({
 
   return (
     <article className={cardClassName}>
-      <img className="lab-card__image" src={lab.imageUrl} alt={lab.name} />
+      {lab.imageUrl ? (
+        <img className="lab-card__image" src={lab.imageUrl} alt={lab.name} />
+      ) : (
+        <div className="lab-card__image lab-card__image--placeholder">
+          <span>{lab.borough}</span>
+          <strong>{lab.name}</strong>
+        </div>
+      )}
       <div className="lab-card__content">
         <div className="lab-card__heading">
           <div>
@@ -53,7 +60,8 @@ export function LabCard({
           <span>{lab.address}</span>
           <span>{lab.turnaround} turnaround</span>
           <span>{lab.priceTier}</span>
-          <span>{lab.rating.toFixed(1)} rating</span>
+          <span>{lab.rating > 0 ? `${lab.rating.toFixed(1)} rating` : "No ratings yet"}</span>
+          <span>{lab.sourceLabel}</span>
         </div>
 
         <div className="lab-card__tags">

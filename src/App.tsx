@@ -2,12 +2,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppHeader } from "./components/AppHeader";
 import { HomePage } from "./pages/HomePage";
 import { LabDetailPage } from "./pages/LabDetailPage";
-import { useLabs } from "./hooks/useLabs";
 import { useLocalStorageState } from "./hooks/useLocalStorageState";
 import type { NoteMap } from "./types";
 
 function App() {
-  const { labs, isLoading, error } = useLabs();
   const [favoriteIds, setFavoriteIds] = useLocalStorageState<string[]>("favorite-labs", []);
   const [notesByLabId, setNotesByLabId] = useLocalStorageState<NoteMap>("lab-notes", {});
 
@@ -40,9 +38,6 @@ function App() {
           path="/"
           element={
             <HomePage
-              labs={labs}
-              isLoading={isLoading}
-              error={error}
               favoriteIds={favoriteIds}
               notesByLabId={notesByLabId}
               onToggleFavorite={toggleFavorite}
@@ -53,9 +48,6 @@ function App() {
           path="/labs/:labId"
           element={
             <LabDetailPage
-              labs={labs}
-              isLoading={isLoading}
-              error={error}
               favoriteIds={favoriteIds}
               notesByLabId={notesByLabId}
               onToggleFavorite={toggleFavorite}

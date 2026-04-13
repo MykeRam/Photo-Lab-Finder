@@ -1,51 +1,61 @@
 import { useEffect, useState } from "react";
 import { fetchLabs } from "../services/labsApi";
-import type { PhotoLab } from "../types";
+import type { LabSearchResponse, LabService, PhotoLab } from "../types";
 
 type UseLabsState = {
-  labs: PhotoLab[];
-  isLoading: boolean;
   error: string | null;
+  isLoading: boolean;
+  labs: PhotoLab[];
+  provider: LabSearchResponse["provider"] | null;
+  usedFallback: boolean;
 };
 
-export function useLabs() {
+export function useLabs(query: string, services: LabService[]) {
   const [state, setState] = useState<UseLabsState>({
-    labs: [],
-    isLoading: true,
     error: null,
+    isLoading: true,
+    labs: [],
+    provider: null,
+    usedFallback: false,
   });
 
   useEffect(() => {
-    let isActive = true;
+    const controller = new AbortController();
 
-    fetchLabs()
-      .then((labs) => {
-        if (!isActive) {
-          return;
-        }
+    setState((current) => ({
+      ...current,
+      error: null,
+      isLoading: true,
+    }));
 
+    fetchLabs({ query, services }, controller.signal)
+      .then((payload) => {
         setState({
-          labs,
-          isLoading: false,
           error: null,
+          isLoading: false,
+          labs: payload.labs,
+          provider: payload.provider,
+          usedFallback: payload.usedFallback,
         });
       })
-      .catch(() => {
-        if (!isActive) {
+      .catch((error: Error) => {
+        if (controller.signal.aborted) {
           return;
         }
 
         setState({
-          labs: [],
+          error: error.message,
           isLoading: false,
-          error: "Unable to load photo labs right now.",
+          labs: [],
+          provider: null,
+          usedFallback: false,
         });
       });
 
     return () => {
-      isActive = false;
+      controller.abort();
     };
-  }, []);
+  }, [query, services]);
 
   return state;
 }

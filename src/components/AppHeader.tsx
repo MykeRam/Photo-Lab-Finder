@@ -19,7 +19,7 @@ export function AppHeader({ savedCount }: AppHeaderProps) {
         </div>
         <div className="header-summary__item">
           <span>Search Scope</span>
-          <strong>NYC boroughs</strong>
+          <strong>NYC only</strong>
         </div>
       </div>
     </header>

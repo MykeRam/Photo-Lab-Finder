@@ -1,30 +1,25 @@
 import { Link, useLocation, useParams } from "react-router-dom";
 import { serviceLabels } from "../data/labs";
 import { StatePanel } from "../components/StatePanel";
-import type { NoteMap, PhotoLab } from "../types";
+import { useLab } from "../hooks/useLab";
+import type { NoteMap } from "../types";
 
 type LabDetailPageProps = {
-  error: string | null;
   favoriteIds: string[];
-  isLoading: boolean;
-  labs: PhotoLab[];
   notesByLabId: NoteMap;
   onToggleFavorite: (id: string) => void;
   onUpdateNote: (labId: string, note: string) => void;
 };
 
 export function LabDetailPage({
-  error,
   favoriteIds,
-  isLoading,
-  labs,
   notesByLabId,
   onToggleFavorite,
   onUpdateNote,
 }: LabDetailPageProps) {
   const { labId } = useParams();
   const location = useLocation();
-  const lab = labs.find((item) => item.id === labId);
+  const { error, isLoading, lab } = useLab(labId);
   const backHref = location.search ? `/${location.search}` : "/";
 
   if (isLoading) {
@@ -65,7 +60,14 @@ export function LabDetailPage({
 
       <article className="detail-layout">
         <section className="detail-hero">
-          <img className="detail-hero__image" src={lab.imageUrl} alt={lab.name} />
+          {lab.imageUrl ? (
+            <img className="detail-hero__image" src={lab.imageUrl} alt={lab.name} />
+          ) : (
+            <div className="detail-hero__image detail-hero__image--placeholder">
+              <span>{lab.borough}</span>
+              <strong>{lab.name}</strong>
+            </div>
+          )}
 
           <div className="detail-hero__content">
             <p className="eyebrow">
@@ -89,7 +91,11 @@ export function LabDetailPage({
               </div>
               <div className="detail-meta-card">
                 <span>Rating</span>
-                <strong>{lab.rating.toFixed(1)}</strong>
+                <strong>{lab.rating > 0 ? lab.rating.toFixed(1) : "No ratings yet"}</strong>
+              </div>
+              <div className="detail-meta-card">
+                <span>Source</span>
+                <strong>{lab.sourceLabel}</strong>
               </div>
             </div>
 
@@ -101,7 +107,13 @@ export function LabDetailPage({
               >
                 {isFavorite ? "Saved to favorites" : "Save this lab"}
               </button>
-              <span className="detail-link detail-link--static">{lab.hours}</span>
+              {lab.mapsUrl ? (
+                <a className="detail-link" href={lab.mapsUrl} target="_blank" rel="noreferrer">
+                  Open map listing
+                </a>
+              ) : (
+                <span className="detail-link detail-link--static">{lab.hours}</span>
+              )}
             </div>
           </div>
         </section>
@@ -127,6 +139,25 @@ export function LabDetailPage({
             </ul>
           </div>
         </section>
+
+        {lab.website || lab.phone ? (
+          <section className="detail-columns">
+            {lab.website ? (
+              <div className="panel">
+                <h2>Website</h2>
+                <a className="text-link" href={lab.website} target="_blank" rel="noreferrer">
+                  {lab.website}
+                </a>
+              </div>
+            ) : null}
+            {lab.phone ? (
+              <div className="panel">
+                <h2>Phone</h2>
+                <p className="detail-hero__description">{lab.phone}</p>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
 
         <section className="panel notes-panel">
           <div className="notes-panel__header">

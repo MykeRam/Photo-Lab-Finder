@@ -3,14 +3,22 @@ A location-based web app that helps users find and compare photography labs by a
 
 ## Current milestone
 
-Routed MVP shell with:
+NYC-only routed MVP with:
 
 - borough and neighborhood search
 - service filters for develop, scan, prints, and same-day
 - cards view plus map/list view
 - detail pages for each lab
 - local favorites and personal notes
+- a local API proxy that uses Google Places first, Foursquare as fallback, and seeded NYC data when no keys are configured
+
+## Environment
+
+Create `.env` from `.env.example` and add one or both:
+
+- `GOOGLE_PLACES_API_KEY`
+- `FOURSQUARE_API_KEY`
 
 ## Planned next step
 
-Replace seeded data with a real location-aware API flow and connect persistent data to a backend.
+Add autocomplete, improve service inference from live providers, and persist saved data to a backend.

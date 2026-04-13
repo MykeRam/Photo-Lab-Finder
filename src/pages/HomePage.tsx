@@ -6,13 +6,12 @@ import { MapPanel } from "../components/MapPanel";
 import { SearchBar } from "../components/SearchBar";
 import { StatePanel } from "../components/StatePanel";
 import { ViewToggle } from "../components/ViewToggle";
-import type { LabService, NoteMap, PhotoLab, ViewMode } from "../types";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
+import { useLabs } from "../hooks/useLabs";
+import type { LabService, NoteMap, ViewMode } from "../types";
 
 type HomePageProps = {
-  error: string | null;
   favoriteIds: string[];
-  isLoading: boolean;
-  labs: PhotoLab[];
   notesByLabId: NoteMap;
   onToggleFavorite: (id: string) => void;
 };
@@ -31,37 +30,19 @@ function parseServices(value: string | null) {
 }
 
 export function HomePage({
-  error,
   favoriteIds,
-  isLoading,
-  labs,
   notesByLabId,
   onToggleFavorite,
 }: HomePageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedLabId, setSelectedLabId] = useState<string | null>(null);
   const query = searchParams.get("q") ?? "";
-  const activeServices = parseServices(searchParams.get("services"));
+  const servicesParam = searchParams.get("services");
+  const activeServices = useMemo(() => parseServices(servicesParam), [servicesParam]);
   const viewMode = searchParams.get("view") === "map" ? "map" : "cards";
-
-  const filteredLabs = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    return labs.filter((lab) => {
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        [lab.name, lab.borough, lab.neighborhood]
-          .join(" ")
-          .toLowerCase()
-          .includes(normalizedQuery);
-
-      const matchesServices =
-        activeServices.length === 0 ||
-        activeServices.every((service) => lab.services.includes(service));
-
-      return matchesQuery && matchesServices;
-    });
-  }, [activeServices, labs, query]);
+  const debouncedQuery = useDebouncedValue(query, 350);
+  const { error, isLoading, labs, provider, usedFallback } = useLabs(debouncedQuery, activeServices);
+  const filteredLabs = labs;
 
   useEffect(() => {
     if (filteredLabs.length === 0) {
@@ -111,11 +92,11 @@ export function HomePage({
       <section className="hero-panel">
         <div>
           <p className="eyebrow">Core MVP</p>
-          <h1>Compare neighborhood photo labs without losing your shortlist.</h1>
+          <h1>Compare NYC photo labs without losing your shortlist.</h1>
         </div>
         <p className="hero-panel__copy">
-          Search by borough or neighborhood, switch between cards and a map/list split, then save labs
-          and keep personal notes for the next roll.
+          Search by borough or neighborhood inside New York City, switch between cards and a map/list
+          split, then save labs and keep personal notes for the next roll.
         </p>
       </section>
 
@@ -135,6 +116,14 @@ export function HomePage({
             <div className="panel panel--stat">
               <span>Saved</span>
               <strong>{favoriteIds.length}</strong>
+            </div>
+            <div className="panel panel--stat">
+              <span>Provider</span>
+              <strong>{provider ?? "..."}</strong>
+            </div>
+            <div className="panel panel--stat">
+              <span>Fallback</span>
+              <strong>{usedFallback ? "On" : "Off"}</strong>
             </div>
           </section>
         </aside>
