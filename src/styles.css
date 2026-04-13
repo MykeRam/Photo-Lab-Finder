@@ -1,0 +1,280 @@
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1c1713;
+  background: #f6f1e8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, #f6f1e8 0%, #f2dfd5 55%, #efeadc 100%);
+  color: #1c1713;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.app-shell {
+  width: min(1200px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.topbar {
+  display: grid;
+  gap: 20px;
+  align-items: end;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(28, 23, 19, 0.12);
+}
+
+.topbar h1 {
+  margin: 8px 0 0;
+  font-size: clamp(2rem, 4vw, 4.2rem);
+  line-height: 0.95;
+  max-width: 12ch;
+}
+
+.topbar__summary {
+  margin: 0;
+  max-width: 48ch;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #8d3e2c;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.app-layout {
+  display: grid;
+  gap: 28px;
+  padding-top: 28px;
+}
+
+.controls-panel {
+  display: grid;
+  gap: 20px;
+}
+
+.search-bar {
+  display: grid;
+  gap: 10px;
+}
+
+.search-bar__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.search-bar__input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  border: 1px solid rgba(28, 23, 19, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.92);
+}
+
+.search-bar__input:focus-visible {
+  outline: 2px solid #1c8a7c;
+  outline-offset: 2px;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-chip {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(28, 23, 19, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.9);
+  color: #1c1713;
+}
+
+.filter-chip--active {
+  border-color: #1c8a7c;
+  background: #1c8a7c;
+  color: #fffcf6;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stats-row div {
+  display: grid;
+  gap: 4px;
+  min-height: 92px;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.72);
+}
+
+.stats-row strong {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+}
+
+.stats-row span {
+  color: rgba(28, 23, 19, 0.72);
+}
+
+.results-panel {
+  display: block;
+}
+
+.state-panel {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.6);
+}
+
+.results-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-card {
+  display: grid;
+  background: rgba(255, 252, 246, 0.82);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lab-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.lab-card__content {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.lab-card__heading {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.lab-card__heading h2 {
+  margin: 6px 0 0;
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+}
+
+.lab-card__eyebrow {
+  margin: 0;
+  color: rgba(28, 23, 19, 0.66);
+  font-size: 0.92rem;
+}
+
+.favorite-button {
+  flex-shrink: 0;
+  min-width: 80px;
+  min-height: 40px;
+  border: 1px solid #cf7450;
+  border-radius: 8px;
+  background: transparent;
+  color: #8d3e2c;
+}
+
+.favorite-button--active {
+  background: #cf7450;
+  color: #fffcf6;
+}
+
+.lab-card__description {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.lab-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: rgba(28, 23, 19, 0.72);
+}
+
+.lab-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.service-tag {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(28, 138, 124, 0.12);
+  color: #0f5c53;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 880px) {
+  .topbar {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  }
+
+  .app-layout {
+    grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .controls-panel {
+    position: sticky;
+    top: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    width: min(100% - 20px, 1200px);
+    padding-top: 20px;
+  }
+
+  .lab-card__heading {
+    flex-direction: column;
+  }
+}
