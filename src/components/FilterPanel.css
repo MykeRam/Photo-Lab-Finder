@@ -12,6 +12,21 @@
   gap: 10px;
 }
 
+.filter-panel__hint,
+.filter-panel__error {
+  margin: 10px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.filter-panel__hint {
+  color: rgba(30, 25, 20, 0.7);
+}
+
+.filter-panel__error {
+  color: #8d3e2c;
+}
+
 .filter-panel__chip {
   min-height: 40px;
   padding: 0 14px;

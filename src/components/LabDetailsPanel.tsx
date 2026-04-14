@@ -83,13 +83,13 @@ export function LabDetailsPanel({
       </section>
 
       <section className="lab-details-panel__columns">
-        <div className="lab-details-panel__panel">
-          <h2>Services</h2>
-          <div className="lab-card__tags">
-            {lab.services.map((service) => (
-              <ServiceTag key={service} label={service} />
-            ))}
-          </div>
+          <div className="lab-details-panel__panel">
+            <h2>Services</h2>
+            <div className="lab-details-panel__tags">
+              {lab.services.map((service) => (
+                <ServiceTag key={service} label={service} />
+              ))}
+            </div>
         </div>
 
         <div className="lab-details-panel__panel">

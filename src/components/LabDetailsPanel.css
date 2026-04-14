@@ -85,6 +85,12 @@
   color: rgba(30, 25, 20, 0.8);
 }
 
+.lab-details-panel__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .lab-details-panel__notes textarea {
   width: 100%;
   min-height: 180px;
