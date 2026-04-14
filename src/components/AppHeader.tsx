@@ -9,8 +9,7 @@ export function AppHeader({ savedCount }: AppHeaderProps) {
   return (
     <header className="app-header">
       <Link className="app-header__brand" to="/">
-        <span className="eyebrow">Photo Lab Finder</span>
-        <strong>Neighborhood-first film lab search</strong>
+        <strong>NYC Film Lab Finder</strong>
       </Link>
 
       <div className="app-header__summary">
