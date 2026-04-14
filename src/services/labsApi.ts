@@ -40,3 +40,10 @@ export async function fetchLabById(labId: string, signal?: AbortSignal) {
 
   return payload.lab;
 }
+
+export function fetchGooglePlacePhoto(placeId: string, signal?: AbortSignal) {
+  return requestJson<{ imageUrl: string | null; photoAttributions: string[] }>(
+    `/api/google-place-photo?placeId=${encodeURIComponent(placeId)}`,
+    { signal },
+  );
+}

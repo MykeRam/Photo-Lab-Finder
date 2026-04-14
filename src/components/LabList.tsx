@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LabService, NearbyMapPlace, NoteMap, PhotoLab } from "../types";
 import { LabCard } from "./LabCard";
 import { MapPanel } from "./MapPanel";
@@ -14,6 +14,7 @@ type LabListProps = {
   labs: PhotoLab[];
   notesByLabId: NoteMap;
   onHoverLab: (labId: string) => void;
+  onMatchCountChange: (count: number) => void;
   onPlaceSelect: (latitude: number, longitude: number) => void;
   onToggleFavorite: (id: string) => void;
   selectedLabId: string | null;
@@ -28,6 +29,7 @@ export function LabList({
   labs,
   notesByLabId,
   onHoverLab,
+  onMatchCountChange,
   onPlaceSelect,
   onToggleFavorite,
   selectedLabId,
@@ -44,6 +46,14 @@ export function LabList({
       }, {}),
     [nearbyPlaces],
   );
+  const matchCount = useMemo(
+    () => labs.length + nearbyPlaces.filter((place) => place.matchedLabId === null).length,
+    [labs.length, nearbyPlaces],
+  );
+
+  useEffect(() => {
+    onMatchCountChange(matchCount);
+  }, [matchCount, onMatchCountChange]);
 
   return (
     <div className="lab-list">

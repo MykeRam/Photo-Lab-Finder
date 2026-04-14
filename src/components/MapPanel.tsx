@@ -8,6 +8,7 @@ import {
   useJsApiLoader,
 } from "@react-google-maps/api";
 import { serviceLabels } from "../data/labs";
+import { fetchGooglePlacePhoto } from "../services/labsApi";
 import type { LabService, NearbyMapPlace, PhotoLab } from "../types";
 import "./MapPanel.css";
 
@@ -408,17 +409,13 @@ export function MapPanel({
 
           const mappedPlace = {
             address: place.vicinity ?? place.name ?? "",
-            imageUrl:
-              place.photos?.[0]?.getUrl({
-                maxHeight: 520,
-                maxWidth: 920,
-              }) ?? null,
+            imageUrl: null,
             lat,
             lng,
             mapsUrl: buildGoogleMapsUrl(placeId),
             name: place.name ?? "Photo lab",
             placeId,
-            photoAttributions: place.photos?.[0]?.html_attributions ?? [],
+            photoAttributions: [],
             rating: typeof place.rating === "number" ? place.rating : null,
           };
 
@@ -444,6 +441,30 @@ export function MapPanel({
 
         setLivePlaces(sortedPlaces);
         setLiveSearchLoading(false);
+
+        Promise.all(
+          sortedPlaces.slice(0, 12).map((place) =>
+            fetchGooglePlacePhoto(place.placeId)
+              .then((photoPayload) => ({
+                ...place,
+                imageUrl: photoPayload.imageUrl,
+                photoAttributions: photoPayload.photoAttributions,
+              }))
+              .catch(() => place),
+          ),
+        ).then((placesWithPhotos) => {
+          if (requestId !== nearbySearchRequestRef.current) {
+            return;
+          }
+
+          const photoMap = new Map(
+            placesWithPhotos.map((place) => [place.placeId, place]),
+          );
+
+          setLivePlaces((current) =>
+            current.map((place) => photoMap.get(place.placeId) ?? place),
+          );
+        });
       })
       .catch(() => {
         if (requestId !== nearbySearchRequestRef.current) {

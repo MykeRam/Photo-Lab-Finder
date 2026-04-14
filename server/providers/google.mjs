@@ -43,6 +43,35 @@ async function getGooglePhotoUri(apiKey, photoName, maxWidth = 1200) {
   return payload.photoUri ?? null;
 }
 
+export async function getGooglePlacePhoto({ apiKey, placeId }) {
+  const response = await fetch(`${GOOGLE_PLACE_URL}/${placeId}`, {
+    headers: getHeaders(apiKey, ["photos"].join(",")),
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  const place = await response.json();
+  const photo = place.photos?.[0];
+
+  if (!photo?.name) {
+    return {
+      imageUrl: null,
+      photoAttributions: [],
+    };
+  }
+
+  return {
+    imageUrl: await getGooglePhotoUri(apiKey, photo.name),
+    photoAttributions: (photo.authorAttributions ?? []).map((attribution) =>
+      attribution.uri
+        ? `<a href="${attribution.uri}" target="_blank" rel="noreferrer">${attribution.displayName}</a>`
+        : attribution.displayName,
+    ),
+  };
+}
+
 function mapGoogleHours(regularOpeningHours) {
   if (regularOpeningHours?.weekdayDescriptions?.length > 0) {
     return regularOpeningHours.weekdayDescriptions[0];

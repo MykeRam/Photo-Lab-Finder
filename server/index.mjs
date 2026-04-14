@@ -1,6 +1,7 @@
 import express from "express";
 import { getDb } from "./db/mongo.mjs";
-import { getLabById, parseSearchInput, runSeedCuratedLabs, searchLabs } from "./services/labs-service.mjs";
+import { getGooglePlacePhoto } from "./providers/google.mjs";
+import { getLabById, parseSearchInput, searchLabs } from "./services/labs-service.mjs";
 
 const port = Number(process.env.PORT ?? 8787);
 const app = express();
@@ -100,25 +101,34 @@ app.get("/api/labs/:id", async (request, response) => {
   }
 });
 
-app.post("/api/labs/seed-curated", async (request, response) => {
-  const token = process.env.SEED_ROUTE_TOKEN;
-  const requestToken = request.header("x-seed-token");
-  const canSeed = token ? requestToken === token : process.env.NODE_ENV !== "production";
-
-  if (!canSeed) {
-    response.status(403).json({
-      message: "Seeding is not allowed for this environment.",
-    });
-    return;
-  }
-
+app.get("/api/google-place-photo", async (request, response) => {
   try {
-    const result = await runSeedCuratedLabs();
-    response.status(200).json(result);
+    const placeId = String(request.query.placeId ?? "").trim();
+
+    if (!placeId) {
+      response.status(400).json({
+        message: "Google place photo requests require a placeId.",
+      });
+      return;
+    }
+
+    if (!process.env.GOOGLE_PLACES_API_KEY) {
+      response.status(503).json({
+        message: "Google Places API is not configured on the server.",
+      });
+      return;
+    }
+
+    const payload = await getGooglePlacePhoto({
+      apiKey: process.env.GOOGLE_PLACES_API_KEY,
+      placeId,
+    });
+
+    response.status(200).json(payload);
   } catch (error) {
-    console.error("[POST /api/labs/seed-curated]", error);
+    console.error("[GET /api/google-place-photo]", error);
     response.status(500).json({
-      message: "Unable to seed curated labs right now.",
+      message: "Unable to load this Google place photo right now.",
     });
   }
 });

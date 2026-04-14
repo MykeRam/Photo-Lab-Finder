@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { NearbyMapPlace } from "../types";
 import "./NearbyLabCard.css";
 
@@ -6,10 +7,21 @@ type NearbyLabCardProps = {
 };
 
 export function NearbyLabCard({ place }: NearbyLabCardProps) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [place.imageUrl]);
+
   return (
     <article className="nearby-lab-card">
-      {place.imageUrl ? (
-        <img className="nearby-lab-card__image" src={place.imageUrl} alt={place.name} />
+      {place.imageUrl && !imageFailed ? (
+        <img
+          className="nearby-lab-card__image"
+          src={place.imageUrl}
+          alt={place.name}
+          onError={() => setImageFailed(true)}
+        />
       ) : (
         <div className="nearby-lab-card__image nearby-lab-card__image--placeholder">
           <span>Google Maps Nearby</span>

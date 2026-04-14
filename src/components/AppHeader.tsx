@@ -10,13 +10,14 @@ export function AppHeader({ savedCount }: AppHeaderProps) {
     <header className="app-header">
       <Link className="app-header__brand" to="/">
         <strong>NYC Film Lab Finder</strong>
+        <span>Compare NYC photo labs without losing your shortlist.</span>
       </Link>
 
       <div className="app-header__summary">
-        <div className="app-header__summary-item">
+        <Link className="app-header__summary-item app-header__summary-item--link" to="/saved">
           <span>Saved Labs</span>
           <strong>{savedCount}</strong>
-        </div>
+        </Link>
         <div className="app-header__summary-item">
           <span>Search Scope</span>
           <strong>NYC only</strong>

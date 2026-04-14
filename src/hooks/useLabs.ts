@@ -7,7 +7,6 @@ type UseLabsState = {
   isLoading: boolean;
   labs: PhotoLab[];
   provider: LabSearchResponse["provider"] | null;
-  usedFallback: boolean;
 };
 
 export function useLabs(
@@ -21,7 +20,6 @@ export function useLabs(
     isLoading: true,
     labs: [],
     provider: null,
-    usedFallback: false,
   });
 
   useEffect(() => {
@@ -40,7 +38,6 @@ export function useLabs(
           isLoading: false,
           labs: payload.labs,
           provider: payload.provider,
-          usedFallback: payload.usedFallback,
         });
       })
       .catch((error: Error) => {
@@ -53,7 +50,6 @@ export function useLabs(
           isLoading: false,
           labs: [],
           provider: null,
-          usedFallback: false,
         });
       });
 

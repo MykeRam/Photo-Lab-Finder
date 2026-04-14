@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppHeader } from "./components/AppHeader";
 import { HomePage } from "./pages/HomePage";
 import { LabDetailPage } from "./pages/LabDetailPage";
+import { SavedLabsPage } from "./pages/SavedLabsPage";
 import { useLocalStorageState } from "./hooks/useLocalStorageState";
 import type { NoteMap } from "./types";
 import "./App.css";
@@ -54,6 +55,16 @@ function App() {
                 notesByLabId={notesByLabId}
                 onToggleFavorite={toggleFavorite}
                 onUpdateNote={updateNote}
+              />
+            }
+          />
+          <Route
+            path="/saved"
+            element={
+              <SavedLabsPage
+                favoriteIds={favoriteIds}
+                notesByLabId={notesByLabId}
+                onToggleFavorite={toggleFavorite}
               />
             }
           />

@@ -35,6 +35,7 @@ export function HomePage({
   onToggleFavorite,
 }: HomePageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [matchCount, setMatchCount] = useState(0);
   const [selectedLabId, setSelectedLabId] = useState<string | null>(null);
   const query = searchParams.get("q") ?? "";
   const servicesParam = searchParams.get("services");
@@ -48,7 +49,7 @@ export function HomePage({
   const hasCurrentLocation = latitude !== null && longitude !== null;
   const debouncedQuery = useDebouncedValue(query, 350);
   const { clearLocationError, isLocating, locationError, requestCurrentLocation } = useCurrentLocation();
-  const { error, isLoading, labs, provider, usedFallback } = useLabs(
+  const { error, isLoading, labs, provider } = useLabs(
     debouncedQuery,
     activeServices,
     latitude,
@@ -66,6 +67,10 @@ export function HomePage({
       setSelectedLabId(filteredLabs[0].id);
     }
   }, [filteredLabs, selectedLabId]);
+
+  useEffect(() => {
+    setMatchCount(filteredLabs.length);
+  }, [filteredLabs.length]);
 
   function updateSearchParams(next: {
     latitude?: number | null;
@@ -134,7 +139,7 @@ export function HomePage({
       <section className="home-page__hero">
         <div>
           <p className="eyebrow">Core MVP</p>
-          <h1>Compare NYC photo labs without losing your shortlist.</h1>
+          <h1>Search NYC labs on a live map with a synced shortlist.</h1>
         </div>
         <p className="home-page__copy">
           Search by borough, neighborhood, ZIP, or your current location inside New York City, then
@@ -157,7 +162,7 @@ export function HomePage({
           <section className="home-page__stats">
             <div className="home-page__stat">
               <span>Matches</span>
-              <strong>{filteredLabs.length}</strong>
+              <strong>{matchCount}</strong>
             </div>
             <div className="home-page__stat">
               <span>Saved</span>
@@ -170,10 +175,6 @@ export function HomePage({
             <div className="home-page__stat">
               <span>Search Mode</span>
               <strong>{hasCurrentLocation ? "Nearby" : "Area"}</strong>
-            </div>
-            <div className="home-page__stat">
-              <span>Fallback</span>
-              <strong>{usedFallback ? "On" : "Off"}</strong>
             </div>
           </section>
         </aside>
@@ -204,6 +205,7 @@ export function HomePage({
               labs={filteredLabs}
               notesByLabId={notesByLabId}
               onHoverLab={setSelectedLabId}
+              onMatchCountChange={setMatchCount}
               onPlaceSelect={(nextLatitude, nextLongitude) =>
                 updateSearchParams({
                   latitude: nextLatitude,

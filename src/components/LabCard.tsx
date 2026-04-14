@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { PhotoLab } from "../types";
 import { FavoriteButton } from "./FavoriteButton";
@@ -27,11 +28,21 @@ export function LabCard({
 }: LabCardProps) {
   const cardClassName = layout === "row" ? "lab-card lab-card--row" : "lab-card";
   const imageUrl = imageOverrideUrl ?? lab.imageUrl;
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [imageUrl]);
 
   return (
     <article className={cardClassName}>
-      {imageUrl ? (
-        <img className="lab-card__image" src={imageUrl} alt={lab.name} />
+      {imageUrl && !imageFailed ? (
+        <img
+          className="lab-card__image"
+          src={imageUrl}
+          alt={lab.name}
+          onError={() => setImageFailed(true)}
+        />
       ) : (
         <div className="lab-card__image lab-card__image--placeholder">
           <span>{lab.borough}</span>

@@ -1,10 +1,8 @@
 import { getDb } from "../db/mongo.mjs";
-import { seedLabs } from "../data/seed-labs.mjs";
 import { decodeLabId, isCoordinateWithinNyc } from "../lib/place-utils.mjs";
-import { findCuratedLabs, findLabBySourceId, seedCuratedLabs, upsertLabs } from "../repositories/labs.mjs";
+import { findLabBySourceId, upsertLabs } from "../repositories/labs.mjs";
 import { getFoursquareLabById, searchFoursquareLabs } from "../providers/foursquare.mjs";
 import { getGoogleLabById, searchGoogleLabs } from "../providers/google.mjs";
-import { getSeedLabById, searchSeedLabs } from "../providers/seed.mjs";
 
 function getProviderOrder() {
   return (process.env.PLACES_PROVIDER_ORDER ?? "google,foursquare")
@@ -44,7 +42,7 @@ async function getLiveProviderResults(input) {
         });
 
         if (labs.length > 0) {
-          return { provider: "google", usedFallback: false, labs };
+          return { provider: "google", labs };
         }
       }
 
@@ -57,7 +55,6 @@ async function getLiveProviderResults(input) {
         if (labs.length > 0) {
           return {
             provider: "foursquare",
-            usedFallback: providerOrder[0] !== "foursquare",
             labs,
           };
         }
@@ -81,26 +78,19 @@ export async function searchLabs(input) {
     return liveResults;
   }
 
-  const curatedLabs = await findCuratedLabs(db, input);
-
-  if (curatedLabs.length > 0) {
-    return {
-      provider: "seed",
-      usedFallback: true,
-      labs: curatedLabs,
-    };
-  }
-
   return {
-    provider: "seed",
-    usedFallback: true,
-    labs: await searchSeedLabs(input),
+    provider: getProviderOrder()[0] === "foursquare" ? "foursquare" : "google",
+    labs: [],
   };
 }
 
 export async function getLabById(encodedId) {
   const db = await getDb();
   const { provider, sourceId } = decodeLabId(encodedId);
+
+  if (!["google", "foursquare"].includes(provider)) {
+    return null;
+  }
 
   try {
     if (provider === "google" && process.env.GOOGLE_PLACES_API_KEY) {
@@ -133,14 +123,5 @@ export async function getLabById(encodedId) {
   const cachedLab = await findLabBySourceId(db, provider, sourceId);
   if (cachedLab) return cachedLab;
 
-  if (provider === "seed") {
-    return getSeedLabById(sourceId);
-  }
-
   return null;
-}
-
-export async function runSeedCuratedLabs() {
-  const db = await getDb();
-  return seedCuratedLabs(db, seedLabs);
 }

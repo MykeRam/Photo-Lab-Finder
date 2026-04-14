@@ -213,7 +213,7 @@ export function mapDocumentToPhotoLab(doc, origin = null, geoDistanceMeters = nu
         ? "Google Places"
         : doc.placeSource === "foursquare"
           ? "Foursquare Places"
-          : "Seed Data"),
+          : "External Provider"),
     name: doc.name,
     borough: doc.borough,
     neighborhood: doc.neighborhood,
@@ -291,52 +291,9 @@ export async function upsertLabs(db, labs, options = {}) {
   return result.upsertedCount + result.modifiedCount;
 }
 
-export async function findCuratedLabs(db, { latitude = null, longitude = null, query, services }) {
-  if (!db) return [];
-
-  const collection = db.collection("labs");
-  const origin =
-    latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null;
-  const baseMatch = {
-    ...buildTextFilter(query),
-    ...buildServiceFilter(services),
-  };
-
-  if (origin) {
-    const docs = await collection
-      .aggregate([
-        {
-          $geoNear: {
-            near: { type: "Point", coordinates: [longitude, latitude] },
-            distanceField: "geoDistanceMeters",
-            spherical: true,
-            query: baseMatch,
-            maxDistance: 20000,
-          },
-        },
-        { $limit: 30 },
-      ])
-      .toArray();
-
-    return docs.map((doc) => mapDocumentToPhotoLab(doc, origin, doc.geoDistanceMeters));
-  }
-
-  const docs = await collection.find(baseMatch).sort({ rating: -1, updatedAt: -1 }).limit(30).toArray();
-  return docs.map((doc) => mapDocumentToPhotoLab(doc, origin));
-}
-
 export async function findLabBySourceId(db, placeSource, placeId) {
   if (!db) return null;
 
   const doc = await db.collection("labs").findOne({ placeSource, placeId });
   return doc ? mapDocumentToPhotoLab(doc) : null;
-}
-
-export async function seedCuratedLabs(db, labs) {
-  if (!db) {
-    return { inserted: 0, dbEnabled: false };
-  }
-
-  const inserted = await upsertLabs(db, labs, { curated: true });
-  return { inserted, dbEnabled: true };
 }
