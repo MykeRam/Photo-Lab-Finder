@@ -8,7 +8,7 @@ import {
   useJsApiLoader,
 } from "@react-google-maps/api";
 import { serviceLabels } from "../data/labs";
-import type { LabService, PhotoLab } from "../types";
+import type { LabService, NearbyMapPlace, PhotoLab } from "../types";
 import "./MapPanel.css";
 
 type MapPanelProps = {
@@ -17,22 +17,26 @@ type MapPanelProps = {
   activeLongitude: number | null;
   detailSearch: string;
   labs: PhotoLab[];
+  onNearbyPlacesChange: (places: NearbyMapPlace[]) => void;
   onPlaceSelect: (latitude: number, longitude: number) => void;
   selectedLabId: string | null;
 };
 
 type NearbyPlace = {
   address: string;
+  imageUrl: string | null;
   lat: number;
   lng: number;
   mapsUrl: string;
   name: string;
   placeId: string;
+  photoAttributions: string[];
   rating: number | null;
 };
 
 type MapMarker = {
   address: string;
+  imageUrl: string | null;
   id: string;
   kind: "app" | "nearby";
   lat: number;
@@ -40,6 +44,7 @@ type MapMarker = {
   mapsUrl: string | null;
   matchedLab: PhotoLab | null;
   name: string;
+  photoAttributions: string[];
   rating: number | null;
 };
 
@@ -159,6 +164,7 @@ export function MapPanel({
   activeLongitude,
   detailSearch,
   labs,
+  onNearbyPlacesChange,
   onPlaceSelect,
   selectedLabId,
 }: MapPanelProps) {
@@ -234,6 +240,7 @@ export function MapPanel({
 
       return {
         address: matchedLab?.address ?? place.address,
+        imageUrl: place.imageUrl,
         id: matchedLab?.id ?? `nearby:${place.placeId}`,
         kind: matchedLab ? "app" : "nearby",
         lat: place.lat,
@@ -241,6 +248,7 @@ export function MapPanel({
         mapsUrl: matchedLab?.mapsUrl ?? place.mapsUrl,
         matchedLab,
         name: matchedLab?.name ?? place.name,
+        photoAttributions: place.photoAttributions,
         rating: matchedLab?.rating ?? place.rating,
       } satisfies MapMarker;
     });
@@ -249,6 +257,7 @@ export function MapPanel({
       .filter((lab) => !matchedLabIds.has(lab.id))
       .map((lab) => ({
         address: lab.address,
+        imageUrl: null,
         id: lab.id,
         kind: "app" as const,
         lat: lab.coordinates.lat,
@@ -256,6 +265,7 @@ export function MapPanel({
         mapsUrl: lab.mapsUrl,
         matchedLab: lab,
         name: lab.name,
+        photoAttributions: [],
         rating: lab.rating,
       }));
 
@@ -269,6 +279,25 @@ export function MapPanel({
       null,
     [highlightedMarkerId, markers, selectedLabId],
   );
+
+  useEffect(() => {
+    onNearbyPlacesChange(
+      markers
+        .filter((marker) => marker.kind === "nearby")
+        .map((marker) => ({
+          address: marker.address,
+          imageUrl: marker.imageUrl,
+          id: marker.id,
+          lat: marker.lat,
+          lng: marker.lng,
+          mapsUrl: marker.mapsUrl ?? buildGoogleMapsUrl(marker.id.replace(/^nearby:/, "")),
+          matchedLabId: marker.matchedLab?.id ?? null,
+          name: marker.name,
+          photoAttributions: marker.photoAttributions,
+          rating: marker.rating,
+        })),
+    );
+  }, [markers, onNearbyPlacesChange]);
 
   const handleMapLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -379,11 +408,17 @@ export function MapPanel({
 
           const mappedPlace = {
             address: place.vicinity ?? place.name ?? "",
+            imageUrl:
+              place.photos?.[0]?.getUrl({
+                maxHeight: 520,
+                maxWidth: 920,
+              }) ?? null,
             lat,
             lng,
             mapsUrl: buildGoogleMapsUrl(placeId),
             name: place.name ?? "Photo lab",
             placeId,
+            photoAttributions: place.photos?.[0]?.html_attributions ?? [],
             rating: typeof place.rating === "number" ? place.rating : null,
           };
 

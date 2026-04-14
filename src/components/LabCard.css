@@ -6,7 +6,8 @@
 }
 
 .lab-card--row {
-  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .lab-card__image {
@@ -28,6 +29,7 @@
   display: grid;
   gap: 14px;
   padding: 18px;
+  align-content: start;
 }
 
 .lab-card__heading {
@@ -56,6 +58,17 @@
 
 .lab-card__note {
   color: #0f5c53;
+}
+
+.lab-card__photo-attribution {
+  display: grid;
+  gap: 4px;
+  color: rgba(30, 25, 20, 0.62);
+  font-size: 0.82rem;
+}
+
+.lab-card__photo-attribution a {
+  color: inherit;
 }
 
 .lab-card__meta {
@@ -90,6 +103,29 @@
 
 .lab-card__title-link {
   text-decoration: none;
+}
+
+@media (min-width: 721px) {
+  .lab-card--row .lab-card__image {
+    min-height: 180px;
+    max-height: 220px;
+    aspect-ratio: 16 / 9;
+  }
+
+  .lab-card--row .lab-card__content {
+    padding-top: 16px;
+  }
+
+  .lab-card--row .lab-card__description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .lab-card--row .lab-card__meta {
+    gap: 8px 12px;
+  }
 }
 
 @media (max-width: 720px) {

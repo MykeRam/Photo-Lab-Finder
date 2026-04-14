@@ -7,7 +7,7 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { useCurrentLocation } from "../hooks/useCurrentLocation";
 import { useLabs } from "../hooks/useLabs";
-import type { LabService, NoteMap, ViewMode } from "../types";
+import type { LabService, NoteMap } from "../types";
 import "./HomePage.css";
 
 type HomePageProps = {
@@ -39,7 +39,6 @@ export function HomePage({
   const query = searchParams.get("q") ?? "";
   const servicesParam = searchParams.get("services");
   const activeServices = useMemo(() => parseServices(servicesParam), [servicesParam]);
-  const viewMode = searchParams.get("view") === "map" ? "map" : "cards";
   const latitudeParam = searchParams.get("lat");
   const longitudeParam = searchParams.get("lng");
   const parsedLatitude = latitudeParam ? Number(latitudeParam) : null;
@@ -73,13 +72,11 @@ export function HomePage({
     longitude?: number | null;
     q?: string;
     services?: LabService[];
-    view?: ViewMode;
   }) {
     const params = createSearchParams();
 
     const nextQuery = next.q ?? query;
     const nextServices = next.services ?? activeServices;
-    const nextView = next.view ?? viewMode;
     const nextLatitude =
       next.latitude === undefined ? latitude : next.latitude;
     const nextLongitude =
@@ -91,10 +88,6 @@ export function HomePage({
 
     if (nextServices.length > 0) {
       params.set("services", nextServices.join(","));
-    }
-
-    if (nextView === "map") {
-      params.set("view", "map");
     }
 
     if (nextLatitude !== null && nextLongitude !== null) {
@@ -144,8 +137,8 @@ export function HomePage({
           <h1>Compare NYC photo labs without losing your shortlist.</h1>
         </div>
         <p className="home-page__copy">
-          Search by borough, neighborhood, ZIP, or your current location inside New York City, switch
-          between cards and a map/list split, then save labs and keep personal notes for the next roll.
+          Search by borough, neighborhood, ZIP, or your current location inside New York City, then
+          compare nearby labs on a live map with a synced results list and saved notes.
         </p>
       </section>
 
@@ -157,18 +150,8 @@ export function HomePage({
             isLocating={isLocating}
             locationError={locationError}
             onClearCurrentLocation={handleClearCurrentLocation}
-            onQueryChange={(value) =>
-              updateSearchParams({
-                latitude: null,
-                longitude: null,
-                q: value,
-              })
-            }
             onToggleService={handleToggleService}
             onUseCurrentLocation={handleUseCurrentLocation}
-            onViewChange={(mode) => updateSearchParams({ view: mode })}
-            query={query}
-            viewMode={viewMode}
           />
 
           <section className="home-page__stats">
@@ -226,12 +209,10 @@ export function HomePage({
                   latitude: nextLatitude,
                   longitude: nextLongitude,
                   q: "",
-                  view: "map",
                 })
               }
               onToggleFavorite={onToggleFavorite}
               selectedLabId={selectedLabId}
-              viewMode={viewMode}
             />
           ) : null}
         </section>

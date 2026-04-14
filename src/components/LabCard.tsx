@@ -6,27 +6,32 @@ import "./LabCard.css";
 
 type LabCardProps = {
   detailHref: string;
+  imageOverrideUrl?: string | null;
   isFavorite: boolean;
   lab: PhotoLab;
   layout: "card" | "row";
   note?: string;
   onToggleFavorite: (id: string) => void;
+  photoAttributions?: string[];
 };
 
 export function LabCard({
   detailHref,
+  imageOverrideUrl,
   isFavorite,
   lab,
   layout,
   note,
   onToggleFavorite,
+  photoAttributions = [],
 }: LabCardProps) {
   const cardClassName = layout === "row" ? "lab-card lab-card--row" : "lab-card";
+  const imageUrl = imageOverrideUrl ?? lab.imageUrl;
 
   return (
     <article className={cardClassName}>
-      {lab.imageUrl ? (
-        <img className="lab-card__image" src={lab.imageUrl} alt={lab.name} />
+      {imageUrl ? (
+        <img className="lab-card__image" src={imageUrl} alt={lab.name} />
       ) : (
         <div className="lab-card__image lab-card__image--placeholder">
           <span>{lab.borough}</span>
@@ -67,6 +72,14 @@ export function LabCard({
         </div>
 
         {note ? <p className="lab-card__note">Note: {note}</p> : null}
+
+        {photoAttributions.length > 0 ? (
+          <div className="lab-card__photo-attribution">
+            {photoAttributions.map((attribution) => (
+              <span key={attribution} dangerouslySetInnerHTML={{ __html: attribution }} />
+            ))}
+          </div>
+        ) : null}
 
         <Link className="lab-card__link" to={detailHref}>
           View lab details

@@ -1,0 +1,80 @@
+.nearby-lab-card {
+  display: grid;
+  border-radius: 8px;
+  background: rgba(255, 250, 243, 0.82);
+  overflow: hidden;
+}
+
+.nearby-lab-card__image {
+  width: 100%;
+  min-height: 180px;
+  max-height: 220px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.nearby-lab-card__image--placeholder {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 18px;
+  background: linear-gradient(180deg, #d9d0ba 0%, #8f6a4f 100%);
+  color: #fffaf3;
+}
+
+.nearby-lab-card__body {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.nearby-lab-card__eyebrow {
+  margin: 0;
+  color: rgba(30, 25, 20, 0.7);
+  font-size: 0.92rem;
+}
+
+.nearby-lab-card h3 {
+  margin: 0;
+  font-size: clamp(1.15rem, 2vw, 1.35rem);
+}
+
+.nearby-lab-card__address {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(30, 25, 20, 0.8);
+}
+
+.nearby-lab-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  color: rgba(30, 25, 20, 0.68);
+}
+
+.nearby-lab-card__photo-attribution {
+  display: grid;
+  gap: 4px;
+  color: rgba(30, 25, 20, 0.62);
+  font-size: 0.82rem;
+}
+
+.nearby-lab-card__photo-attribution a {
+  color: inherit;
+}
+
+.nearby-lab-card__link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 25, 20, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  text-decoration: none;
+}
+
+.nearby-lab-card__link:hover {
+  text-decoration: underline;
+}

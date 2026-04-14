@@ -17,6 +17,22 @@
   gap: 14px;
 }
 
+.lab-list__extra-results {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.lab-list__extra-label {
+  margin: 0;
+  color: rgba(30, 25, 20, 0.7);
+}
+
+.lab-list__extra-grid {
+  display: grid;
+  gap: 14px;
+}
+
 .lab-list__result {
   padding: 0;
   border: 0;

@@ -2,8 +2,6 @@ export type LabService = "develop" | "scan" | "prints" | "sameDay";
 
 export type Turnaround = "same-day" | "1-2 days" | "2-3 days" | "4-7 days";
 
-export type ViewMode = "cards" | "map";
-
 export type NoteMap = Record<string, string>;
 
 export type LabSource = "google" | "foursquare" | "seed";
@@ -19,6 +17,19 @@ export type LabSearchResponse = {
   labs: PhotoLab[];
   provider: LabSource;
   usedFallback: boolean;
+};
+
+export type NearbyMapPlace = {
+  address: string;
+  imageUrl: string | null;
+  id: string;
+  lat: number;
+  lng: number;
+  mapsUrl: string;
+  matchedLabId: string | null;
+  name: string;
+  photoAttributions: string[];
+  rating: number | null;
 };
 
 export type PhotoLab = {

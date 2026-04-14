@@ -119,8 +119,18 @@ export async function searchGoogleLabs({ apiKey, latitude, longitude, query, ser
   const requestedServices = getRequestedServices(services);
   const origin =
     latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : null;
+  const searchRequests = [
+    {
+      matchedServices: [],
+      textQuery: `photo lab in ${areaQuery}`,
+    },
+    ...requestedServices.map((service) => ({
+      matchedServices: [service],
+      textQuery: `${SERVICE_QUERY_MAP[service]} in ${areaQuery}`,
+    })),
+  ];
 
-  const requests = requestedServices.map(async (service) => {
+  const requests = searchRequests.map(async ({ matchedServices, textQuery }) => {
     const response = await fetch(GOOGLE_SEARCH_URL, {
       method: "POST",
       headers: getHeaders(
@@ -142,10 +152,10 @@ export async function searchGoogleLabs({ apiKey, latitude, longitude, query, ser
         ].join(","),
       ),
       body: JSON.stringify({
-        textQuery: `${SERVICE_QUERY_MAP[service]} in ${areaQuery}`,
+        textQuery,
         languageCode: "en",
         regionCode: "US",
-        maxResultCount: 6,
+        pageSize: 12,
         locationBias: {
           circle: {
             center: {
@@ -173,7 +183,7 @@ export async function searchGoogleLabs({ apiKey, latitude, longitude, query, ser
           return null;
         }
 
-        return mapGooglePlace(place, apiKey, [service], origin);
+        return mapGooglePlace(place, apiKey, matchedServices, origin);
       }),
     );
 
