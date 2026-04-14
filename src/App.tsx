@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppHeader } from "./components/AppHeader";
 import { HomePage } from "./pages/HomePage";
 import { LabDetailPage } from "./pages/LabDetailPage";
@@ -8,6 +8,8 @@ import type { NoteMap } from "./types";
 import "./App.css";
 
 function App() {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
   const [favoriteIds, setFavoriteIds] = useLocalStorageState<string[]>("favorite-labs", []);
   const [notesByLabId, setNotesByLabId] = useLocalStorageState<NoteMap>("lab-notes", {});
 
@@ -71,6 +73,18 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
+      {!isHomePage ? (
+        <footer className="app-footer">
+          <a
+            className="app-footer__link"
+            href="https://mykeram.github.io/Mykes-Photog/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Developed by Michael Ramirez
+          </a>
+        </footer>
+      ) : null}
     </div>
   );
 }

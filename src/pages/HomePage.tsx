@@ -138,7 +138,6 @@ export function HomePage({
     <main className="home-page">
       <section className="home-page__hero">
         <div>
-          <p className="eyebrow">Core MVP</p>
           <h1>Search NYC labs on a live map with a synced shortlist.</h1>
         </div>
         <p className="home-page__copy">
@@ -165,6 +164,17 @@ export function HomePage({
               <strong>{matchCount}</strong>
             </div>
           </section>
+
+          <footer className="home-page__footer">
+            <a
+              className="app-footer__link"
+              href="https://mykeram.github.io/Mykes-Photog/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Developed by Michael Ramirez
+            </a>
+          </footer>
         </aside>
 
         <section className="home-page__results" aria-live="polite">

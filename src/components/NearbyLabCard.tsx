@@ -24,12 +24,10 @@ export function NearbyLabCard({ place }: NearbyLabCardProps) {
         />
       ) : (
         <div className="nearby-lab-card__image nearby-lab-card__image--placeholder">
-          <span>Google Maps Nearby</span>
           <strong>{place.name}</strong>
         </div>
       )}
       <div className="nearby-lab-card__body">
-        <p className="nearby-lab-card__eyebrow">Google Maps Nearby</p>
         <h3>{place.name}</h3>
         <p className="nearby-lab-card__address">{place.address}</p>
         <div className="nearby-lab-card__meta">

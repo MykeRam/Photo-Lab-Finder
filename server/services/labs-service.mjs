@@ -100,8 +100,29 @@ export async function getLabById(encodedId) {
       });
 
       if (lab) {
-        await upsertLabs(db, [lab]);
-        return lab;
+        const cachedLab = await findLabBySourceId(db, provider, sourceId);
+        const mergedLab =
+          cachedLab && lab.services.length === 0
+            ? {
+                ...lab,
+                services: cachedLab.services.length > 0 ? cachedLab.services : lab.services,
+                specialties:
+                  cachedLab.specialties.length > lab.specialties.length
+                    ? cachedLab.specialties
+                    : lab.specialties,
+                description: lab.description || cachedLab.description,
+                turnaround: lab.turnaround || cachedLab.turnaround,
+                priceTier: lab.priceTier || cachedLab.priceTier,
+                hours: lab.hours || cachedLab.hours,
+                imageUrl: lab.imageUrl || cachedLab.imageUrl,
+                website: lab.website || cachedLab.website,
+                mapsUrl: lab.mapsUrl || cachedLab.mapsUrl,
+                phone: lab.phone || cachedLab.phone,
+              }
+            : lab;
+
+        await upsertLabs(db, [mergedLab]);
+        return mergedLab;
       }
     }
 
@@ -112,8 +133,29 @@ export async function getLabById(encodedId) {
       });
 
       if (lab) {
-        await upsertLabs(db, [lab]);
-        return lab;
+        const cachedLab = await findLabBySourceId(db, provider, sourceId);
+        const mergedLab =
+          cachedLab && lab.services.length === 0
+            ? {
+                ...lab,
+                services: cachedLab.services.length > 0 ? cachedLab.services : lab.services,
+                specialties:
+                  cachedLab.specialties.length > lab.specialties.length
+                    ? cachedLab.specialties
+                    : lab.specialties,
+                description: lab.description || cachedLab.description,
+                turnaround: lab.turnaround || cachedLab.turnaround,
+                priceTier: lab.priceTier || cachedLab.priceTier,
+                hours: lab.hours || cachedLab.hours,
+                imageUrl: lab.imageUrl || cachedLab.imageUrl,
+                website: lab.website || cachedLab.website,
+                mapsUrl: lab.mapsUrl || cachedLab.mapsUrl,
+                phone: lab.phone || cachedLab.phone,
+              }
+            : lab;
+
+        await upsertLabs(db, [mergedLab]);
+        return mergedLab;
       }
     }
   } catch (error) {

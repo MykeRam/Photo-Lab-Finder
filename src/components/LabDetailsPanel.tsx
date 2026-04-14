@@ -35,9 +35,6 @@ export function LabDetailsPanel({
         )}
 
         <div className="lab-details-panel__content">
-          <p className="eyebrow">
-            {lab.borough} · {lab.neighborhood}
-          </p>
           <h1>{lab.name}</h1>
           <p className="lab-details-panel__description">{lab.description}</p>
 
@@ -83,13 +80,19 @@ export function LabDetailsPanel({
       </section>
 
       <section className="lab-details-panel__columns">
-          <div className="lab-details-panel__panel">
-            <h2>Services</h2>
+        <div className="lab-details-panel__panel">
+          <h2>Services</h2>
+          {lab.services.length > 0 ? (
             <div className="lab-details-panel__tags">
               {lab.services.map((service) => (
                 <ServiceTag key={service} label={service} />
               ))}
             </div>
+          ) : (
+            <p className="lab-details-panel__empty">
+              Service details are not listed for this lab yet.
+            </p>
+          )}
         </div>
 
         <div className="lab-details-panel__panel">

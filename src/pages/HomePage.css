@@ -37,6 +37,10 @@
   gap: 14px;
 }
 
+.home-page__footer {
+  padding-top: 4px;
+}
+
 .home-page__stat {
   display: grid;
   gap: 18px;

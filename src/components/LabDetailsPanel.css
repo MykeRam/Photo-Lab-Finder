@@ -43,6 +43,12 @@
   color: rgba(30, 25, 20, 0.8);
 }
 
+.lab-details-panel__empty {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(30, 25, 20, 0.72);
+}
+
 .lab-details-panel__meta-grid,
 .lab-details-panel__columns {
   display: grid;
@@ -86,9 +92,17 @@
 }
 
 .lab-details-panel__tags {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 10px;
+}
+
+.lab-details-panel__tags .service-tag {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.95rem;
 }
 
 .lab-details-panel__notes textarea {

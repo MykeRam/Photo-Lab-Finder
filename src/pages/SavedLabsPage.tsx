@@ -97,7 +97,6 @@ export function SavedLabsPage({
     <main className="saved-labs-page">
       <div className="saved-labs-page__header">
         <div>
-          <p className="eyebrow">Saved Labs</p>
           <h1>Your shortlist</h1>
         </div>
         <Link className="saved-labs-page__back-link" to="/">
