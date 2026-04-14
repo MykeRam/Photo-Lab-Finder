@@ -89,4 +89,8 @@ The client runs with Vite and opens automatically. The API server runs alongside
 
 ![Photo Lab Finder home screen](./docs/nyc-photolab-sc.png)
 
+## Saved Labs
+
+![Photo Lab Finder saved labs screen](./docs/nyc-photolab-savedlabs-sc.png)
+
 <small><a href="https://www.flaticon.com/free-icons/camera" title="camera icons">Camera icons created by Freepik - Flaticon</a></small>
