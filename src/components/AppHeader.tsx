@@ -18,10 +18,6 @@ export function AppHeader({ savedCount }: AppHeaderProps) {
           <span>Saved Labs</span>
           <strong>{savedCount}</strong>
         </Link>
-        <div className="app-header__summary-item">
-          <span>Search Scope</span>
-          <strong>NYC only</strong>
-        </div>
       </div>
     </header>
   );

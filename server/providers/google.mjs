@@ -32,7 +32,7 @@ async function getGooglePhotoUri(apiKey, photoName, maxWidth = 1200) {
   }
 
   const response = await fetch(
-    `${GOOGLE_PLACE_URL}/${photoName}/media?maxWidthPx=${maxWidth}&skipHttpRedirect=true&key=${encodeURIComponent(apiKey)}`,
+    `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxWidth}&skipHttpRedirect=true&key=${encodeURIComponent(apiKey)}`,
   );
 
   if (!response.ok) {

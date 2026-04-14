@@ -49,7 +49,7 @@ export function HomePage({
   const hasCurrentLocation = latitude !== null && longitude !== null;
   const debouncedQuery = useDebouncedValue(query, 350);
   const { clearLocationError, isLocating, locationError, requestCurrentLocation } = useCurrentLocation();
-  const { error, isLoading, labs, provider } = useLabs(
+  const { error, isLoading, labs } = useLabs(
     debouncedQuery,
     activeServices,
     latitude,
@@ -164,18 +164,6 @@ export function HomePage({
               <span>Matches</span>
               <strong>{matchCount}</strong>
             </div>
-            <div className="home-page__stat">
-              <span>Saved</span>
-              <strong>{favoriteIds.length}</strong>
-            </div>
-            <div className="home-page__stat">
-              <span>Provider</span>
-              <strong>{provider ?? "..."}</strong>
-            </div>
-            <div className="home-page__stat">
-              <span>Search Mode</span>
-              <strong>{hasCurrentLocation ? "Nearby" : "Area"}</strong>
-            </div>
           </section>
         </aside>
 
@@ -188,14 +176,7 @@ export function HomePage({
             <EmptyState title="Unable to load labs" body={error} />
           ) : null}
 
-          {!isLoading && !error && filteredLabs.length === 0 ? (
-            <EmptyState
-              title="No matching labs"
-              body="Try a different NYC area, another ZIP code, your current location, or fewer service filters."
-            />
-          ) : null}
-
-          {!isLoading && !error && filteredLabs.length > 0 ? (
+          {!isLoading && !error ? (
             <LabList
               activeServices={activeServices}
               activeLatitude={latitude}
