@@ -27,7 +27,10 @@ export function fetchLabs(input: LabSearchInput, signal?: AbortSignal) {
     params.set("lng", String(input.longitude));
   }
 
-  return requestJson<LabSearchResponse>(`/api/labs?${params.toString()}`, { signal });
+  const endpoint =
+    input.latitude !== null && input.longitude !== null ? "/api/labs/nearby" : "/api/labs/search";
+
+  return requestJson<LabSearchResponse>(`${endpoint}?${params.toString()}`, { signal });
 }
 
 export async function fetchLabById(labId: string, signal?: AbortSignal) {

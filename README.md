@@ -11,6 +11,7 @@ NYC-only routed MVP with:
 - detail pages for each lab
 - local favorites and personal notes
 - a local API proxy that uses Google Places first, Foursquare as fallback, and seeded NYC data when no keys are configured
+- Express backend routes with optional MongoDB backing for curated and cached lab records
 
 ## Environment
 
@@ -18,6 +19,7 @@ Create `.env` from `.env.example` and add one or both:
 
 - `GOOGLE_PLACES_API_KEY`
 - `FOURSQUARE_API_KEY`
+- `MONGODB_URI`
 
 ## Planned next step
 

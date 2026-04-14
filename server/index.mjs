@@ -1,162 +1,134 @@
-import { createServer } from "node:http";
-import { decodeLabId, isCoordinateWithinNyc } from "./lib/place-utils.mjs";
-import { getFoursquareLabById, searchFoursquareLabs } from "./providers/foursquare.mjs";
-import { getGoogleLabById, searchGoogleLabs } from "./providers/google.mjs";
-import { getSeedLabById, searchSeedLabs } from "./providers/seed.mjs";
+import express from "express";
+import { getDb } from "./db/mongo.mjs";
+import { getLabById, parseSearchInput, runSeedCuratedLabs, searchLabs } from "./services/labs-service.mjs";
 
 const port = Number(process.env.PORT ?? 8787);
+const app = express();
 
-function sendJson(response, statusCode, payload) {
-  response.writeHead(statusCode, {
-    "Content-Type": "application/json",
-    "Cache-Control": "no-store",
-  });
-  response.end(JSON.stringify(payload));
-}
+app.use(express.json());
 
-function getProviderOrder() {
-  return (process.env.PLACES_PROVIDER_ORDER ?? "google,foursquare")
-    .split(",")
-    .map((provider) => provider.trim())
-    .filter(Boolean);
-}
-
-function getSearchInput(url) {
-  const latitudeParam = url.searchParams.get("lat");
-  const longitudeParam = url.searchParams.get("lng");
-  const parsedLatitude = latitudeParam ? Number(latitudeParam) : null;
-  const parsedLongitude = longitudeParam ? Number(longitudeParam) : null;
-  const latitude = Number.isFinite(parsedLatitude) ? parsedLatitude : null;
-  const longitude = Number.isFinite(parsedLongitude) ? parsedLongitude : null;
-
-  return {
-    latitude,
-    longitude,
-    query: url.searchParams.get("q") ?? "",
-    services: (url.searchParams.get("services") ?? "")
-      .split(",")
-      .map((service) => service.trim())
-      .filter(Boolean),
-  };
-}
-
-async function searchLabs(input) {
-  if (
-    input.latitude !== null &&
-    input.longitude !== null &&
-    !isCoordinateWithinNyc(input.latitude, input.longitude)
-  ) {
-    const error = new Error("Current location must be within New York City for this app.");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const providerOrder = getProviderOrder();
-
-  for (const provider of providerOrder) {
-    try {
-      if (provider === "google" && process.env.GOOGLE_PLACES_API_KEY) {
-        const labs = await searchGoogleLabs({
-          apiKey: process.env.GOOGLE_PLACES_API_KEY,
-          ...input,
-        });
-
-        if (labs.length > 0) {
-          return { provider: "google", usedFallback: false, labs };
-        }
-      }
-
-      if (provider === "foursquare" && process.env.FOURSQUARE_API_KEY) {
-        const labs = await searchFoursquareLabs({
-          apiKey: process.env.FOURSQUARE_API_KEY,
-          ...input,
-        });
-
-        if (labs.length > 0) {
-          return {
-            provider: "foursquare",
-            usedFallback: providerOrder[0] !== "foursquare",
-            labs,
-          };
-        }
-      }
-    } catch (error) {
-      console.error(`[search:${provider}]`, error);
-    }
-  }
-
-  return {
-    provider: "seed",
-    usedFallback: true,
-    labs: await searchSeedLabs(input),
-  };
-}
-
-async function getLabById(encodedId) {
-  const { provider, sourceId } = decodeLabId(encodedId);
-
-  if (provider === "google" && process.env.GOOGLE_PLACES_API_KEY) {
-    return getGoogleLabById({
-      apiKey: process.env.GOOGLE_PLACES_API_KEY,
-      sourceId,
+app.get("/api/health", async (_request, response) => {
+  try {
+    const db = await getDb();
+    response.status(200).json({
+      ok: true,
+      dbEnabled: Boolean(db),
+    });
+  } catch (error) {
+    response.status(200).json({
+      ok: true,
+      dbEnabled: false,
+      dbError: error.message,
     });
   }
-
-  if (provider === "foursquare" && process.env.FOURSQUARE_API_KEY) {
-    return getFoursquareLabById({
-      apiKey: process.env.FOURSQUARE_API_KEY,
-      sourceId,
-    });
-  }
-
-  if (provider === "seed") {
-    return getSeedLabById(sourceId);
-  }
-
-  return null;
-}
-
-const server = createServer(async (request, response) => {
-  const url = new URL(request.url ?? "/", `http://${request.headers.host}`);
-
-  if (request.method === "GET" && url.pathname === "/api/health") {
-    sendJson(response, 200, { ok: true });
-    return;
-  }
-
-  if (request.method === "GET" && url.pathname === "/api/labs") {
-    try {
-      sendJson(response, 200, await searchLabs(getSearchInput(url)));
-    } catch (error) {
-      console.error("[api/labs]", error);
-      sendJson(response, error.statusCode ?? 500, {
-        message: error.message ?? "Unable to load NYC photo labs right now.",
-      });
-    }
-    return;
-  }
-
-  if (request.method === "GET" && url.pathname.startsWith("/api/labs/")) {
-    try {
-      const encodedId = decodeURIComponent(url.pathname.replace("/api/labs/", ""));
-      const lab = await getLabById(encodedId);
-
-      if (!lab) {
-        sendJson(response, 404, { message: "Lab not found." });
-        return;
-      }
-
-      sendJson(response, 200, { provider: lab.source, lab });
-    } catch (error) {
-      console.error("[api/labs/:id]", error);
-      sendJson(response, 500, { message: "Unable to load this NYC photo lab right now." });
-    }
-    return;
-  }
-
-  sendJson(response, 404, { message: "Not found." });
 });
 
-server.listen(port, "127.0.0.1", () => {
+app.get("/api/labs/search", async (request, response) => {
+  try {
+    const payload = await searchLabs(
+      parseSearchInput({
+        query: request.query.q,
+        services: String(request.query.services ?? "")
+          .split(",")
+          .map((service) => service.trim())
+          .filter(Boolean),
+      }),
+    );
+
+    response.status(200).json(payload);
+  } catch (error) {
+    console.error("[GET /api/labs/search]", error);
+    response.status(error.statusCode ?? 500).json({
+      message: error.message ?? "Unable to load NYC photo labs right now.",
+    });
+  }
+});
+
+app.get("/api/labs/nearby", async (request, response) => {
+  try {
+    const latitude = Number(request.query.lat);
+    const longitude = Number(request.query.lng);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      response.status(400).json({
+        message: "Nearby search requires lat and lng query parameters.",
+      });
+      return;
+    }
+
+    const payload = await searchLabs(
+      parseSearchInput({
+        latitude,
+        longitude,
+        query: request.query.q ?? "",
+        services: String(request.query.services ?? "")
+          .split(",")
+          .map((service) => service.trim())
+          .filter(Boolean),
+      }),
+    );
+
+    response.status(200).json(payload);
+  } catch (error) {
+    console.error("[GET /api/labs/nearby]", error);
+    response.status(error.statusCode ?? 500).json({
+      message: error.message ?? "Unable to load nearby NYC photo labs right now.",
+    });
+  }
+});
+
+app.get("/api/labs/:id", async (request, response) => {
+  try {
+    const lab = await getLabById(decodeURIComponent(request.params.id));
+
+    if (!lab) {
+      response.status(404).json({
+        message: "Lab not found.",
+      });
+      return;
+    }
+
+    response.status(200).json({
+      provider: lab.source,
+      lab,
+    });
+  } catch (error) {
+    console.error("[GET /api/labs/:id]", error);
+    response.status(500).json({
+      message: "Unable to load this NYC photo lab right now.",
+    });
+  }
+});
+
+app.post("/api/labs/seed-curated", async (request, response) => {
+  const token = process.env.SEED_ROUTE_TOKEN;
+  const requestToken = request.header("x-seed-token");
+  const canSeed = token ? requestToken === token : process.env.NODE_ENV !== "production";
+
+  if (!canSeed) {
+    response.status(403).json({
+      message: "Seeding is not allowed for this environment.",
+    });
+    return;
+  }
+
+  try {
+    const result = await runSeedCuratedLabs();
+    response.status(200).json(result);
+  } catch (error) {
+    console.error("[POST /api/labs/seed-curated]", error);
+    response.status(500).json({
+      message: "Unable to seed curated labs right now.",
+    });
+  }
+});
+
+app.use("/api", (_request, response) => {
+  response.status(404).json({
+    message: "Not found.",
+  });
+});
+
+app.listen(port, "127.0.0.1", () => {
   console.log(`API server listening on http://127.0.0.1:${port}`);
 });
