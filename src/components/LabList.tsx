@@ -4,22 +4,28 @@ import { MapPanel } from "./MapPanel";
 import "./LabList.css";
 
 type LabListProps = {
+  activeLatitude: number | null;
+  activeLongitude: number | null;
   detailSearch: string;
   favoriteIds: string[];
   labs: PhotoLab[];
   notesByLabId: NoteMap;
   onHoverLab: (labId: string) => void;
+  onPlaceSelect: (latitude: number, longitude: number) => void;
   onToggleFavorite: (id: string) => void;
   selectedLabId: string | null;
   viewMode: ViewMode;
 };
 
 export function LabList({
+  activeLatitude,
+  activeLongitude,
   detailSearch,
   favoriteIds,
   labs,
   notesByLabId,
   onHoverLab,
+  onPlaceSelect,
   onToggleFavorite,
   selectedLabId,
   viewMode,
@@ -47,7 +53,14 @@ export function LabList({
   return (
     <div className="lab-list">
       <div className="lab-list__map-layout">
-        <MapPanel detailSearch={detailSearch} labs={labs} selectedLabId={selectedLabId} />
+        <MapPanel
+          activeLatitude={activeLatitude}
+          activeLongitude={activeLongitude}
+          detailSearch={detailSearch}
+          labs={labs}
+          onPlaceSelect={onPlaceSelect}
+          selectedLabId={selectedLabId}
+        />
 
         <div className="lab-list__results">
           {labs.map((lab) => (

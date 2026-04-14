@@ -1,46 +1,106 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { latLngBounds } from "leaflet";
+import {
+  GoogleMap,
+  InfoWindow,
+  Marker,
+  StandaloneSearchBox,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 import { serviceLabels } from "../data/labs";
 import type { PhotoLab } from "../types";
 import "./MapPanel.css";
 
 type MapPanelProps = {
+  activeLatitude: number | null;
+  activeLongitude: number | null;
   detailSearch: string;
   labs: PhotoLab[];
+  onPlaceSelect: (latitude: number, longitude: number) => void;
   selectedLabId: string | null;
 };
 
-function FitToResults({ labs }: { labs: PhotoLab[] }) {
-  const map = useMap();
+type SelectedPlace = {
+  address: string;
+  lat: number;
+  lng: number;
+  name: string;
+};
+
+const defaultCenter = {
+  lat: 40.7128,
+  lng: -74.006,
+};
+
+const libraries: ("places")[] = ["places"];
+
+export function MapPanel({
+  activeLatitude,
+  activeLongitude,
+  detailSearch,
+  labs,
+  onPlaceSelect,
+  selectedLabId,
+}: MapPanelProps) {
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(null);
+  const [highlightedLabId, setHighlightedLabId] = useState<string | null>(null);
+  const [searchValue, setSearchValue] = useState("");
+  const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "",
+    libraries,
+  });
+
+  const center = useMemo(() => {
+    if (selectedPlace) {
+      return { lat: selectedPlace.lat, lng: selectedPlace.lng };
+    }
+
+    if (activeLatitude !== null && activeLongitude !== null) {
+      return { lat: activeLatitude, lng: activeLongitude };
+    }
+
+    return defaultCenter;
+  }, [activeLatitude, activeLongitude, selectedPlace]);
+
+  const highlightedLab = useMemo(
+    () => labs.find((lab) => lab.id === (highlightedLabId ?? selectedLabId)) ?? null,
+    [highlightedLabId, labs, selectedLabId],
+  );
+
+  const handleMapLoad = useCallback((mapInstance: google.maps.Map) => {
+    setMap(mapInstance);
+  }, []);
+
+  const handleMapUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
 
   useEffect(() => {
-    if (labs.length === 0) {
+    if (!map || labs.length === 0) {
       return;
     }
 
-    const bounds = latLngBounds(labs.map((lab) => [lab.coordinates.lat, lab.coordinates.lng]));
-    map.fitBounds(bounds, {
-      padding: [28, 28],
-      maxZoom: 13,
+    if (activeLatitude !== null && activeLongitude !== null) {
+      map.panTo({ lat: activeLatitude, lng: activeLongitude });
+      map.setZoom(13);
+      return;
+    }
+
+    const bounds = new window.google.maps.LatLngBounds();
+    labs.forEach((lab) => {
+      bounds.extend({
+        lat: lab.coordinates.lat,
+        lng: lab.coordinates.lng,
+      });
     });
-  }, [labs, map]);
-
-  return null;
-}
-
-function FocusSelectedLab({
-  labs,
-  selectedLabId,
-}: {
-  labs: PhotoLab[];
-  selectedLabId: string | null;
-}) {
-  const map = useMap();
+    map.fitBounds(bounds);
+  }, [activeLatitude, activeLongitude, labs, map]);
 
   useEffect(() => {
-    if (!selectedLabId) {
+    if (!map || !selectedLabId) {
       return;
     }
 
@@ -50,44 +110,139 @@ function FocusSelectedLab({
       return;
     }
 
-    map.flyTo([lab.coordinates.lat, lab.coordinates.lng], 13, {
-      duration: 0.6,
+    map.panTo({
+      lat: lab.coordinates.lat,
+      lng: lab.coordinates.lng,
     });
   }, [labs, map, selectedLabId]);
 
-  return null;
-}
+  function handleSearchBoxLoad(searchBox: google.maps.places.SearchBox) {
+    searchBoxRef.current = searchBox;
+  }
 
-export function MapPanel({ detailSearch, labs, selectedLabId }: MapPanelProps) {
+  function handlePlacesChanged() {
+    const places = searchBoxRef.current?.getPlaces();
+
+    if (!places || places.length === 0) {
+      return;
+    }
+
+    const place = places[0];
+
+    if (!place.geometry?.location) {
+      return;
+    }
+
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+
+    setSelectedPlace({
+      address: place.formatted_address ?? "",
+      lat,
+      lng,
+      name: place.name ?? "Selected place",
+    });
+    setSearchValue(place.formatted_address ?? place.name ?? "");
+    onPlaceSelect(lat, lng);
+
+    if (map) {
+      map.panTo({ lat, lng });
+      map.setZoom(13);
+    }
+  }
+
+  if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+    return (
+      <section className="map-panel">
+        <div className="map-panel__message">
+          Google Maps needs `VITE_GOOGLE_MAPS_API_KEY` in `.env` before the map can load.
+        </div>
+      </section>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <section className="map-panel">
+        <div className="map-panel__message">Failed to load Google Maps.</div>
+      </section>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <section className="map-panel">
+        <div className="map-panel__message">Loading Google map...</div>
+      </section>
+    );
+  }
+
   return (
-    <MapContainer
-      center={[40.73061, -73.935242]}
-      className="map-panel"
-      scrollWheelZoom={false}
-      zoom={11}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <section className="map-panel">
+      <div className="map-panel__search">
+        <StandaloneSearchBox onLoad={handleSearchBoxLoad} onPlacesChanged={handlePlacesChanged}>
+          <input
+            className="map-panel__input"
+            type="text"
+            placeholder="Search a neighborhood, ZIP, or lab"
+            value={searchValue}
+            onChange={(event) => setSearchValue(event.target.value)}
+          />
+        </StandaloneSearchBox>
+        <p>Choose a place to recenter the map and load nearby photo labs.</p>
+      </div>
 
-      <FitToResults labs={labs} />
-      <FocusSelectedLab labs={labs} selectedLabId={selectedLabId} />
+      <GoogleMap
+        mapContainerClassName="map-panel__canvas"
+        center={center}
+        zoom={12}
+        onLoad={handleMapLoad}
+        onUnmount={handleMapUnmount}
+        options={{
+          clickableIcons: false,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+        }}
+      >
+        {selectedPlace ? (
+          <Marker
+            position={{
+              lat: selectedPlace.lat,
+              lng: selectedPlace.lng,
+            }}
+            title={selectedPlace.name}
+          />
+        ) : null}
 
-      {labs.map((lab) => (
-        <Marker key={lab.id} position={[lab.coordinates.lat, lab.coordinates.lng]}>
-          <Popup>
+        {labs.map((lab) => (
+          <Marker
+            key={lab.id}
+            position={{ lat: lab.coordinates.lat, lng: lab.coordinates.lng }}
+            title={lab.name}
+            onClick={() => setHighlightedLabId(lab.id)}
+          />
+        ))}
+
+        {highlightedLab ? (
+          <InfoWindow
+            position={{
+              lat: highlightedLab.coordinates.lat,
+              lng: highlightedLab.coordinates.lng,
+            }}
+            onCloseClick={() => setHighlightedLabId(null)}
+          >
             <div className="map-panel__popup">
-              <strong>{lab.name}</strong>
+              <strong>{highlightedLab.name}</strong>
               <span>
-                {lab.borough} · {lab.neighborhood}
+                {highlightedLab.borough} · {highlightedLab.neighborhood}
               </span>
-              <span>{lab.services.map((service) => serviceLabels[service]).join(", ")}</span>
-              <Link to={`/labs/${lab.id}${detailSearch}`}>Open details</Link>
+              <span>{highlightedLab.services.map((service) => serviceLabels[service]).join(", ")}</span>
+              <Link to={`/labs/${highlightedLab.id}${detailSearch}`}>Open details</Link>
             </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+          </InfoWindow>
+        ) : null}
+      </GoogleMap>
+    </section>
   );
 }

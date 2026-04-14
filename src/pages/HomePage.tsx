@@ -213,11 +213,21 @@ export function HomePage({
 
           {!isLoading && !error && filteredLabs.length > 0 ? (
             <LabList
+              activeLatitude={latitude}
+              activeLongitude={longitude}
               detailSearch={detailSearch}
               favoriteIds={favoriteIds}
               labs={filteredLabs}
               notesByLabId={notesByLabId}
               onHoverLab={setSelectedLabId}
+              onPlaceSelect={(nextLatitude, nextLongitude) =>
+                updateSearchParams({
+                  latitude: nextLatitude,
+                  longitude: nextLongitude,
+                  q: "",
+                  view: "map",
+                })
+              }
               onToggleFavorite={onToggleFavorite}
               selectedLabId={selectedLabId}
               viewMode={viewMode}
