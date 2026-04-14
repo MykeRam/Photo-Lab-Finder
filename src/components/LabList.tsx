@@ -1,9 +1,10 @@
-import type { NoteMap, PhotoLab, ViewMode } from "../types";
+import type { LabService, NoteMap, PhotoLab, ViewMode } from "../types";
 import { LabCard } from "./LabCard";
 import { MapPanel } from "./MapPanel";
 import "./LabList.css";
 
 type LabListProps = {
+  activeServices: LabService[];
   activeLatitude: number | null;
   activeLongitude: number | null;
   detailSearch: string;
@@ -18,6 +19,7 @@ type LabListProps = {
 };
 
 export function LabList({
+  activeServices,
   activeLatitude,
   activeLongitude,
   detailSearch,
@@ -54,6 +56,7 @@ export function LabList({
     <div className="lab-list">
       <div className="lab-list__map-layout">
         <MapPanel
+          activeServices={activeServices}
           activeLatitude={activeLatitude}
           activeLongitude={activeLongitude}
           detailSearch={detailSearch}

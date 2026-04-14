@@ -213,6 +213,7 @@ export function HomePage({
 
           {!isLoading && !error && filteredLabs.length > 0 ? (
             <LabList
+              activeServices={activeServices}
               activeLatitude={latitude}
               activeLongitude={longitude}
               detailSearch={detailSearch}
