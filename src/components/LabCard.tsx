@@ -52,9 +52,6 @@ export function LabCard({
       <div className="lab-card__content">
         <div className="lab-card__heading">
           <div>
-            <p className="lab-card__eyebrow">
-              {lab.borough} · {lab.neighborhood}
-            </p>
             <h2>
               <Link className="lab-card__title-link" to={detailHref}>
                 {lab.name}
@@ -81,6 +78,8 @@ export function LabCard({
             <ServiceTag key={service} label={service} />
           ))}
         </div>
+
+        {note ? <div className="lab-card__divider" aria-hidden="true" /> : null}
 
         {note ? <p className="lab-card__note">Note: {note}</p> : null}
 
