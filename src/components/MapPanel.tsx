@@ -4,6 +4,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { latLngBounds } from "leaflet";
 import { serviceLabels } from "../data/labs";
 import type { PhotoLab } from "../types";
+import "./MapPanel.css";
 
 type MapPanelProps = {
   detailSearch: string;
@@ -76,7 +77,7 @@ export function MapPanel({ detailSearch, labs, selectedLabId }: MapPanelProps) {
       {labs.map((lab) => (
         <Marker key={lab.id} position={[lab.coordinates.lat, lab.coordinates.lng]}>
           <Popup>
-            <div className="map-popup">
+            <div className="map-panel__popup">
               <strong>{lab.name}</strong>
               <span>
                 {lab.borough} · {lab.neighborhood}

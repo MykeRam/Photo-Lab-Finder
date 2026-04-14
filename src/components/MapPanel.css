@@ -1,0 +1,26 @@
+.map-panel {
+  width: 100%;
+  min-height: 480px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.map-panel__popup {
+  display: grid;
+  gap: 6px;
+}
+
+.map-panel__popup span {
+  color: rgba(30, 25, 20, 0.7);
+}
+
+.map-panel__popup a {
+  color: #0f5c53;
+}
+
+@media (min-width: 900px) {
+  .map-panel {
+    position: sticky;
+    top: 20px;
+  }
+}

@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { createSearchParams, useSearchParams } from "react-router-dom";
-import { FilterGroup } from "../components/FilterGroup";
-import { LabCard } from "../components/LabCard";
-import { LocationControls } from "../components/LocationControls";
-import { MapPanel } from "../components/MapPanel";
-import { SearchBar } from "../components/SearchBar";
-import { StatePanel } from "../components/StatePanel";
-import { ViewToggle } from "../components/ViewToggle";
+import { EmptyState } from "../components/EmptyState";
+import { FilterPanel } from "../components/FilterPanel";
+import { LabList } from "../components/LabList";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { useCurrentLocation } from "../hooks/useCurrentLocation";
 import { useLabs } from "../hooks/useLabs";
 import type { LabService, NoteMap, ViewMode } from "../types";
+import "./HomePage.css";
 
 type HomePageProps = {
   favoriteIds: string[];
@@ -139,125 +137,91 @@ export function HomePage({
   const detailSearch = searchParams.toString().length > 0 ? `?${searchParams.toString()}` : "";
 
   return (
-    <main className="page-content">
-      <section className="hero-panel">
+    <main className="home-page">
+      <section className="home-page__hero">
         <div>
           <p className="eyebrow">Core MVP</p>
           <h1>Compare NYC photo labs without losing your shortlist.</h1>
         </div>
-        <p className="hero-panel__copy">
+        <p className="home-page__copy">
           Search by borough, neighborhood, ZIP, or your current location inside New York City, switch
           between cards and a map/list split, then save labs and keep personal notes for the next roll.
         </p>
       </section>
 
-      <div className="workspace-layout">
-        <aside className="control-column">
-          <section className="panel">
-            <SearchBar
-              query={query}
-              onQueryChange={(value) =>
-                updateSearchParams({
-                  latitude: null,
-                  longitude: null,
-                  q: value,
-                })
-              }
-            />
-            <LocationControls
-              hasCurrentLocation={hasCurrentLocation}
-              isLocating={isLocating}
-              locationError={locationError}
-              onClearCurrentLocation={handleClearCurrentLocation}
-              onUseCurrentLocation={handleUseCurrentLocation}
-            />
-            <FilterGroup activeServices={activeServices} onToggle={handleToggleService} />
-            <ViewToggle value={viewMode} onChange={(mode) => updateSearchParams({ view: mode })} />
-          </section>
+      <div className="home-page__layout">
+        <aside className="home-page__controls">
+          <FilterPanel
+            activeServices={activeServices}
+            hasCurrentLocation={hasCurrentLocation}
+            isLocating={isLocating}
+            locationError={locationError}
+            onClearCurrentLocation={handleClearCurrentLocation}
+            onQueryChange={(value) =>
+              updateSearchParams({
+                latitude: null,
+                longitude: null,
+                q: value,
+              })
+            }
+            onToggleService={handleToggleService}
+            onUseCurrentLocation={handleUseCurrentLocation}
+            onViewChange={(mode) => updateSearchParams({ view: mode })}
+            query={query}
+            viewMode={viewMode}
+          />
 
-          <section className="stats-grid">
-            <div className="panel panel--stat">
+          <section className="home-page__stats">
+            <div className="home-page__stat">
               <span>Matches</span>
               <strong>{filteredLabs.length}</strong>
             </div>
-            <div className="panel panel--stat">
+            <div className="home-page__stat">
               <span>Saved</span>
               <strong>{favoriteIds.length}</strong>
             </div>
-            <div className="panel panel--stat">
+            <div className="home-page__stat">
               <span>Provider</span>
               <strong>{provider ?? "..."}</strong>
             </div>
-            <div className="panel panel--stat">
+            <div className="home-page__stat">
               <span>Search Mode</span>
               <strong>{hasCurrentLocation ? "Nearby" : "Area"}</strong>
             </div>
-            <div className="panel panel--stat">
+            <div className="home-page__stat">
               <span>Fallback</span>
               <strong>{usedFallback ? "On" : "Off"}</strong>
             </div>
           </section>
         </aside>
 
-        <section className="results-column" aria-live="polite">
+        <section className="home-page__results" aria-live="polite">
           {isLoading ? (
-            <StatePanel
-              title="Loading labs"
-              body="Fetching the current lab list and preparing the map view."
-            />
+            <LoadingSpinner label="Fetching the current lab list and preparing the map view." />
           ) : null}
 
           {!isLoading && error ? (
-            <StatePanel title="Unable to load labs" body={error} />
+            <EmptyState title="Unable to load labs" body={error} />
           ) : null}
 
           {!isLoading && !error && filteredLabs.length === 0 ? (
-            <StatePanel
+            <EmptyState
               title="No matching labs"
               body="Try a different NYC area, another ZIP code, your current location, or fewer service filters."
             />
           ) : null}
 
-          {!isLoading && !error && filteredLabs.length > 0 && viewMode === "cards" ? (
-            <div className="results-grid">
-              {filteredLabs.map((lab) => (
-                <LabCard
-                  key={lab.id}
-                  detailHref={`/labs/${lab.id}${detailSearch}`}
-                  isFavorite={favoriteIds.includes(lab.id)}
-                  lab={lab}
-                  layout="card"
-                  note={notesByLabId[lab.id]}
-                  onToggleFavorite={onToggleFavorite}
-                />
-              ))}
-            </div>
-          ) : null}
-
-          {!isLoading && !error && filteredLabs.length > 0 && viewMode === "map" ? (
-            <div className="map-list-layout">
-              <MapPanel detailSearch={detailSearch} labs={filteredLabs} selectedLabId={selectedLabId} />
-
-              <div className="results-list">
-                {filteredLabs.map((lab) => (
-                  <div
-                    key={lab.id}
-                    className={selectedLabId === lab.id ? "result-row result-row--active" : "result-row"}
-                    onFocusCapture={() => setSelectedLabId(lab.id)}
-                    onMouseEnter={() => setSelectedLabId(lab.id)}
-                  >
-                    <LabCard
-                      detailHref={`/labs/${lab.id}${detailSearch}`}
-                      isFavorite={favoriteIds.includes(lab.id)}
-                      lab={lab}
-                      layout="row"
-                      note={notesByLabId[lab.id]}
-                      onToggleFavorite={onToggleFavorite}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+          {!isLoading && !error && filteredLabs.length > 0 ? (
+            <LabList
+              detailSearch={detailSearch}
+              favoriteIds={favoriteIds}
+              labs={filteredLabs}
+              notesByLabId={notesByLabId}
+              onHoverLab={setSelectedLabId}
+              onToggleFavorite={onToggleFavorite}
+              selectedLabId={selectedLabId}
+              viewMode={viewMode}
+            />
           ) : null}
         </section>
       </div>

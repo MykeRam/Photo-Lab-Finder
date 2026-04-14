@@ -4,6 +4,7 @@ import { HomePage } from "./pages/HomePage";
 import { LabDetailPage } from "./pages/LabDetailPage";
 import { useLocalStorageState } from "./hooks/useLocalStorageState";
 import type { NoteMap } from "./types";
+import "./App.css";
 
 function App() {
   const [favoriteIds, setFavoriteIds] = useLocalStorageState<string[]>("favorite-labs", []);
@@ -31,32 +32,34 @@ function App() {
   }
 
   return (
-    <div className="page-shell">
+    <div className="app-shell">
       <AppHeader savedCount={favoriteIds.length} />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              favoriteIds={favoriteIds}
-              notesByLabId={notesByLabId}
-              onToggleFavorite={toggleFavorite}
-            />
-          }
-        />
-        <Route
-          path="/labs/:labId"
-          element={
-            <LabDetailPage
-              favoriteIds={favoriteIds}
-              notesByLabId={notesByLabId}
-              onToggleFavorite={toggleFavorite}
-              onUpdateNote={updateNote}
-            />
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <div className="app-content">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                favoriteIds={favoriteIds}
+                notesByLabId={notesByLabId}
+                onToggleFavorite={toggleFavorite}
+              />
+            }
+          />
+          <Route
+            path="/labs/:labId"
+            element={
+              <LabDetailPage
+                favoriteIds={favoriteIds}
+                notesByLabId={notesByLabId}
+                onToggleFavorite={toggleFavorite}
+                onUpdateNote={updateNote}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
     </div>
   );
 }

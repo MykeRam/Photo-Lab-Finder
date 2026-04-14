@@ -1,4 +1,5 @@
 import type { ViewMode } from "../types";
+import "./ViewToggle.css";
 
 type ViewToggleProps = {
   onChange: (mode: ViewMode) => void;

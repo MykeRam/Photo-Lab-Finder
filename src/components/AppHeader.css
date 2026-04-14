@@ -1,0 +1,44 @@
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0 22px;
+  border-bottom: 1px solid rgba(30, 25, 20, 0.12);
+}
+
+.app-header__brand {
+  display: grid;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.app-header__brand strong {
+  font-size: 1.1rem;
+}
+
+.app-header__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.app-header__summary-item {
+  min-width: 132px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(255, 250, 243, 0.75);
+}
+
+.app-header__summary-item span {
+  display: block;
+  color: rgba(30, 25, 20, 0.7);
+  font-size: 0.85rem;
+}
+
+.app-header__summary-item strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.05rem;
+}

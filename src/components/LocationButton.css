@@ -1,0 +1,24 @@
+.location-button {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 25, 20, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  color: #1e1914;
+}
+
+.location-button + .location-button {
+  margin-top: 8px;
+}
+
+.location-button--active {
+  border-color: #1d8b7e;
+  background: #1d8b7e;
+  color: #fffaf3;
+}
+
+.location-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}

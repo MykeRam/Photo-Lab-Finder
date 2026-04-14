@@ -2,6 +2,7 @@ type SearchBarProps = {
   query: string;
   onQueryChange: (value: string) => void;
 };
+import "./SearchBar.css";
 
 export function SearchBar({ query, onQueryChange }: SearchBarProps) {
   return (

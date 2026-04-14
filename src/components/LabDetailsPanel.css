@@ -1,0 +1,123 @@
+.lab-details-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-details-panel__hero {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-details-panel__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.lab-details-panel__image--placeholder {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e7dcc6 0%, #cf7450 100%);
+  color: #fffaf3;
+}
+
+.lab-details-panel__content {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-details-panel__content h1 {
+  margin: 8px 0 0;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  line-height: 0.96;
+  max-width: 12ch;
+}
+
+.lab-details-panel__description {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(30, 25, 20, 0.8);
+}
+
+.lab-details-panel__meta-grid,
+.lab-details-panel__columns {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-details-panel__meta-card,
+.lab-details-panel__panel {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 8px;
+  background: rgba(255, 250, 243, 0.76);
+}
+
+.lab-details-panel__meta-card span,
+.lab-details-panel__status {
+  color: rgba(30, 25, 20, 0.7);
+}
+
+.lab-details-panel__actions,
+.lab-details-panel__notes-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: start;
+}
+
+.lab-details-panel__list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.lab-details-panel__notes p {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(30, 25, 20, 0.8);
+}
+
+.lab-details-panel__notes textarea {
+  width: 100%;
+  min-height: 180px;
+  resize: vertical;
+  padding: 14px 16px;
+  border: 1px solid rgba(30, 25, 20, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.95);
+  color: #1e1914;
+  line-height: 1.6;
+}
+
+.lab-details-panel__notes textarea:focus-visible {
+  outline: 2px solid #1d8b7e;
+  outline-offset: 2px;
+}
+
+.lab-details-panel__link {
+  text-decoration: none;
+}
+
+.lab-details-panel__link:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 900px) {
+  .lab-details-panel__hero {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    align-items: start;
+  }
+
+  .lab-details-panel__meta-grid,
+  .lab-details-panel__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

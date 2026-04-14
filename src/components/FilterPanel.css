@@ -1,0 +1,28 @@
+.filter-panel {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 8px;
+  background: rgba(255, 250, 243, 0.76);
+}
+
+.filter-panel__services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-panel__chip {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 25, 20, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 253, 249, 0.92);
+  color: #1e1914;
+}
+
+.filter-panel__chip--active {
+  border-color: #1d8b7e;
+  background: #1d8b7e;
+  color: #fffaf3;
+}

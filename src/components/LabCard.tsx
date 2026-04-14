@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
-import { serviceLabels } from "../data/labs";
 import type { PhotoLab } from "../types";
+import { FavoriteButton } from "./FavoriteButton";
+import { ServiceTag } from "./ServiceTag";
+import "./LabCard.css";
 
 type LabCardProps = {
   detailHref: string;
@@ -38,20 +40,13 @@ export function LabCard({
               {lab.borough} · {lab.neighborhood}
             </p>
             <h2>
-              <Link className="text-link" to={detailHref}>
+              <Link className="lab-card__title-link" to={detailHref}>
                 {lab.name}
               </Link>
             </h2>
           </div>
 
-          <button
-            type="button"
-            className={isFavorite ? "favorite-button favorite-button--active" : "favorite-button"}
-            onClick={() => onToggleFavorite(lab.id)}
-            aria-pressed={isFavorite}
-          >
-            {isFavorite ? "Saved" : "Save"}
-          </button>
+          <FavoriteButton isFavorite={isFavorite} onClick={() => onToggleFavorite(lab.id)} />
         </div>
 
         <p className="lab-card__description">{lab.description}</p>
@@ -67,15 +62,13 @@ export function LabCard({
 
         <div className="lab-card__tags">
           {lab.services.map((service) => (
-            <span key={service} className="service-tag">
-              {serviceLabels[service]}
-            </span>
+            <ServiceTag key={service} label={service} />
           ))}
         </div>
 
         {note ? <p className="lab-card__note">Note: {note}</p> : null}
 
-        <Link className="detail-link" to={detailHref}>
+        <Link className="lab-card__link" to={detailHref}>
           View lab details
         </Link>
       </div>

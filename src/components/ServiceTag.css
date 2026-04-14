@@ -1,0 +1,7 @@
+.service-tag {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(29, 139, 126, 0.12);
+  color: #0f5c53;
+  font-size: 0.92rem;
+}

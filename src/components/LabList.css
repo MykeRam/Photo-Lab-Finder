@@ -1,0 +1,40 @@
+.lab-list {
+  display: grid;
+}
+
+.lab-list__grid {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-list__map-layout {
+  display: grid;
+  gap: 18px;
+}
+
+.lab-list__results {
+  display: grid;
+  gap: 14px;
+}
+
+.lab-list__result {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.lab-list__result--active .lab-card {
+  outline: 2px solid rgba(29, 139, 126, 0.28);
+}
+
+@media (min-width: 900px) {
+  .lab-list__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lab-list__map-layout {
+    grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.7fr);
+    align-items: start;
+  }
+}
