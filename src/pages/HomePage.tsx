@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createSearchParams, useSearchParams } from "react-router-dom";
+import { Link, createSearchParams, useSearchParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { FilterPanel } from "../components/FilterPanel";
 import { LabList } from "../components/LabList";
@@ -13,10 +13,12 @@ import "./HomePage.css";
 type HomePageProps = {
   favoriteIds: string[];
   notesByLabId: NoteMap;
+  savedCount: number;
   onToggleFavorite: (id: string) => void;
 };
 
 const validServices = new Set<LabService>(["develop", "scan", "prints", "sameDay"]);
+const heroImageSrc = `${import.meta.env.BASE_URL}Train-photo.jpg`;
 
 function parseServices(value: string | null) {
   if (!value) {
@@ -32,6 +34,7 @@ function parseServices(value: string | null) {
 export function HomePage({
   favoriteIds,
   notesByLabId,
+  savedCount,
   onToggleFavorite,
 }: HomePageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -137,16 +140,24 @@ export function HomePage({
   return (
     <main className="home-page">
       <section className="home-page__hero">
-        <div>
+        <div className="home-page__hero-copy">
+          <p className="home-page__eyebrow">NYC photo lab finder</p>
           <h1>Search NYC labs on a live map with a synced shortlist.</h1>
+          <p className="home-page__copy">
+            Search by borough, neighborhood, ZIP, or your current location inside New York City,
+            then compare nearby labs on a live map with a synced results list and saved notes.
+          </p>
+          <a className="home-page__hero-link" href="#browse">
+            Start browsing
+          </a>
         </div>
-        <p className="home-page__copy">
-          Search by borough, neighborhood, ZIP, or your current location inside New York City, then
-          compare nearby labs on a live map with a synced results list and saved notes.
-        </p>
+
+        <div className="home-page__hero-media" aria-hidden="true">
+          <img className="home-page__hero-image" src={heroImageSrc} alt="" loading="eager" />
+        </div>
       </section>
 
-      <div className="home-page__layout">
+      <div className="home-page__layout" id="browse">
         <aside className="home-page__controls">
           <FilterPanel
             activeServices={activeServices}
@@ -163,6 +174,10 @@ export function HomePage({
               <span>Matches</span>
               <strong>{matchCount}</strong>
             </div>
+            <Link className="home-page__stat home-page__stat--link" to="/saved">
+              <span>Saved Labs</span>
+              <strong>{savedCount}</strong>
+            </Link>
           </section>
 
           <footer className="home-page__footer">

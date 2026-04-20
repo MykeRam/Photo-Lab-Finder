@@ -3,6 +3,8 @@ import type { LabService } from "../types";
 import { LocationButton } from "./LocationButton";
 import "./FilterPanel.css";
 
+const logoSrc = `${import.meta.env.BASE_URL}NYC-Photo-Lab-Logo.png`;
+
 type FilterPanelProps = {
   activeServices: LabService[];
   hasCurrentLocation: boolean;
@@ -27,6 +29,7 @@ export function FilterPanel({
   return (
     <section className="filter-panel">
       <div>
+        <img className="filter-panel__brand-image" src={logoSrc} alt="NYC Photo Lab Finder" />
         <LocationButton
           active={hasCurrentLocation}
           disabled={isLocating}

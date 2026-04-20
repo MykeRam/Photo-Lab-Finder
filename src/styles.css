@@ -20,6 +20,10 @@ body,
   min-height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   min-height: 100vh;
   background: linear-gradient(180deg, #f4eee2 0%, #f1d8ca 56%, #efe9de 100%);

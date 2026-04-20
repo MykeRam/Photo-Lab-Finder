@@ -2,20 +2,22 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px 24px;
   align-items: center;
-  padding: 8px 0 22px;
-  border-bottom: 1px solid rgba(30, 25, 20, 0.12);
+  padding: 4px 0 14px;
 }
 
 .app-header__brand {
   display: grid;
   gap: 6px;
+  max-width: 260px;
   text-decoration: none;
 }
 
-.app-header__brand strong {
-  font-size: 1.1rem;
+.app-header__brand-logo {
+  display: block;
+  width: min(180px, 54vw);
+  height: auto;
 }
 
 .app-header__brand span {
@@ -32,7 +34,7 @@
 
 .app-header__summary-item {
   min-width: 132px;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-radius: 8px;
   background: rgba(255, 250, 243, 0.75);
 }

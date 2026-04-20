@@ -1,5 +1,4 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { AppHeader } from "./components/AppHeader";
 import { HomePage } from "./pages/HomePage";
 import { LabDetailPage } from "./pages/LabDetailPage";
 import { SavedLabsPage } from "./pages/SavedLabsPage";
@@ -35,8 +34,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
-      <AppHeader savedCount={favoriteIds.length} />
+    <div className={`app-shell${isHomePage ? " app-shell--home" : ""}`}>
       <div className="app-content">
         <Routes>
           <Route
@@ -45,6 +43,7 @@ function App() {
               <HomePage
                 favoriteIds={favoriteIds}
                 notesByLabId={notesByLabId}
+                savedCount={favoriteIds.length}
                 onToggleFavorite={toggleFavorite}
               />
             }

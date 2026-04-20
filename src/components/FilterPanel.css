@@ -6,6 +6,13 @@
   background: rgba(255, 250, 243, 0.76);
 }
 
+.filter-panel__brand-image {
+  display: block;
+  width: min(180px, 70%);
+  height: auto;
+  margin: 0 auto 14px;
+}
+
 .filter-panel__services {
   display: flex;
   flex-wrap: wrap;
