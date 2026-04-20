@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, createSearchParams, useSearchParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { FilterPanel } from "../components/FilterPanel";
@@ -40,6 +40,7 @@ export function HomePage({
   const [searchParams, setSearchParams] = useSearchParams();
   const [matchCount, setMatchCount] = useState(0);
   const [selectedLabId, setSelectedLabId] = useState<string | null>(null);
+  const browseRef = useRef<HTMLDivElement | null>(null);
   const query = searchParams.get("q") ?? "";
   const servicesParam = searchParams.get("services");
   const activeServices = useMemo(() => parseServices(servicesParam), [servicesParam]);
@@ -135,6 +136,13 @@ export function HomePage({
     });
   }
 
+  function handleStartBrowsing() {
+    browseRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
   const detailSearch = searchParams.toString().length > 0 ? `?${searchParams.toString()}` : "";
 
   return (
@@ -147,9 +155,9 @@ export function HomePage({
             Search by borough, neighborhood, ZIP, or your current location inside New York City,
             then compare nearby labs on a live map with a synced results list and saved notes.
           </p>
-          <a className="home-page__hero-link" href="#browse">
+          <button type="button" className="home-page__hero-link" onClick={handleStartBrowsing}>
             Start browsing
-          </a>
+          </button>
         </div>
 
         <div className="home-page__hero-media" aria-hidden="true">
@@ -157,7 +165,7 @@ export function HomePage({
         </div>
       </section>
 
-      <div className="home-page__layout" id="browse">
+      <div className="home-page__layout" id="browse" ref={browseRef}>
         <aside className="home-page__controls">
           <FilterPanel
             activeServices={activeServices}
