@@ -209,11 +209,7 @@ export function mapDocumentToPhotoLab(doc, origin = null, geoDistanceMeters = nu
     sourceId: doc.placeId,
     sourceLabel:
       doc.runtime?.sourceLabel ||
-      (doc.placeSource === "google"
-        ? "Google Places"
-        : doc.placeSource === "foursquare"
-          ? "Foursquare Places"
-          : "External Provider"),
+      (doc.placeSource === "google" ? "Google Places" : "External Provider"),
     name: doc.name,
     borough: doc.borough,
     neighborhood: doc.neighborhood,

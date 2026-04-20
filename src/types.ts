@@ -4,7 +4,7 @@ export type Turnaround = "same-day" | "1-2 days" | "2-3 days" | "4-7 days";
 
 export type NoteMap = Record<string, string>;
 
-export type LabSource = "google" | "foursquare";
+export type LabSource = "google";
 
 export type LabSearchInput = {
   query: string;

@@ -14,7 +14,7 @@ Photo Lab Finder is an NYC-only web app for discovering and comparing photograph
 | Frontend | React, Vite, TypeScript |
 | Routing | React Router DOM |
 | Maps UI | `@react-google-maps/api`, Google Maps JavaScript API |
-| Places data | Google Places API (New), Foursquare Places API |
+| Places data | Google Places API (New) |
 | Backend | Node.js, Express |
 | Database | MongoDB |
 | Local state | Browser `localStorage` |
@@ -38,7 +38,7 @@ The app is split into a static frontend and a Node API:
 
 1. GitHub Pages serves the Vite build from `src/`
 2. The frontend calls the Render API for lab search and place photos
-3. The API queries Google Places or Foursquare
+3. The API queries Google Places
 4. Results are cached in MongoDB when available
 
 - `src/` contains the React frontend
@@ -53,8 +53,6 @@ The app is split into a static frontend and a Node API:
 | `GOOGLE_PLACES_API_KEY` | Render | Server-side Google Places API key |
 | `MONGODB_URI` | Render | MongoDB Atlas connection string |
 | `MONGODB_DB_NAME` | Render | `photo-lab-finder` |
-| `FOURSQUARE_API_KEY` | Render | Optional Foursquare API key |
-| `PLACES_PROVIDER_ORDER` | Render | Optional, for example `google,foursquare` |
 | `PORT` | Render | Usually managed by the host |
 | `VITE_API_BASE_URL` | GitHub repo variable for Actions | `https://photo-lab-finder.onrender.com` |
 | `VITE_GOOGLE_MAPS_API_KEY` | GitHub repo variable for Actions | Browser Google Maps API key |
@@ -85,8 +83,6 @@ Make sure Render sets these environment variables:
 - `GOOGLE_PLACES_API_KEY`
 - `MONGODB_URI`
 - `MONGODB_DB_NAME`
-- `FOURSQUARE_API_KEY` if you use it
-- `PLACES_PROVIDER_ORDER` if you want to override provider priority
 
 After deployment, the host will show a public service URL. That root URL is what you put into `VITE_API_BASE_URL`.
 
