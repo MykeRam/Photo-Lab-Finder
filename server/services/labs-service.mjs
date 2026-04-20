@@ -70,11 +70,22 @@ async function getLiveProviderResults(input) {
 export async function searchLabs(input) {
   assertNycCoordinates(input.latitude, input.longitude);
 
-  const db = await getDb();
+  let db = null;
+  try {
+    db = await getDb();
+  } catch (error) {
+    console.error("[db:search]", error);
+  }
+
   const liveResults = await getLiveProviderResults(input);
 
   if (liveResults) {
-    await upsertLabs(db, liveResults.labs);
+    try {
+      await upsertLabs(db, liveResults.labs);
+    } catch (error) {
+      console.error("[cache:search]", error);
+    }
+
     return liveResults;
   }
 
@@ -85,7 +96,13 @@ export async function searchLabs(input) {
 }
 
 export async function getLabById(encodedId) {
-  const db = await getDb();
+  let db = null;
+  try {
+    db = await getDb();
+  } catch (error) {
+    console.error("[db:detail]", error);
+  }
+
   const { provider, sourceId } = decodeLabId(encodedId);
 
   if (!["google", "foursquare"].includes(provider)) {
@@ -121,7 +138,12 @@ export async function getLabById(encodedId) {
               }
             : lab;
 
-        await upsertLabs(db, [mergedLab]);
+        try {
+          await upsertLabs(db, [mergedLab]);
+        } catch (error) {
+          console.error("[cache:detail]", error);
+        }
+
         return mergedLab;
       }
     }
@@ -154,7 +176,12 @@ export async function getLabById(encodedId) {
               }
             : lab;
 
-        await upsertLabs(db, [mergedLab]);
+        try {
+          await upsertLabs(db, [mergedLab]);
+        } catch (error) {
+          console.error("[cache:detail]", error);
+        }
+
         return mergedLab;
       }
     }
