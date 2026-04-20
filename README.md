@@ -2,6 +2,11 @@
 
 Photo Lab Finder is an NYC-only web app for discovering and comparing photography labs by borough, neighborhood, ZIP code, and current location. It uses live Google Places data, supports a Google Maps-driven search experience, and lets users save labs locally with personal notes.
 
+## Live Demo
+
+- Frontend: https://mykeram.github.io/Photo-Lab-Finder/
+- API health: https://photo-lab-finder.onrender.com/api/health
+
 ## What it demonstrates
 
 - API usage
