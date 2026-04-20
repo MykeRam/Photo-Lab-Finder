@@ -7,6 +7,18 @@ const port = Number(process.env.PORT ?? 8787);
 const app = express();
 
 app.use(express.json());
+app.use((request, response, next) => {
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (request.method === "OPTIONS") {
+    response.sendStatus(204);
+    return;
+  }
+
+  next();
+});
 
 app.get("/api/health", async (_request, response) => {
   try {
@@ -139,6 +151,8 @@ app.use("/api", (_request, response) => {
   });
 });
 
-app.listen(port, "127.0.0.1", () => {
-  console.log(`API server listening on http://127.0.0.1:${port}`);
+const host = process.env.HOST ?? "0.0.0.0";
+
+app.listen(port, host, () => {
+  console.log(`API server listening on http://${host}:${port}`);
 });

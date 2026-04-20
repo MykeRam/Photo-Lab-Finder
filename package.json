@@ -7,6 +7,7 @@
     "dev": "concurrently -k -n server,client -c green,cyan \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite --open",
     "dev:server": "node --env-file-if-exists=.env --watch server/index.mjs",
+    "start": "node server/index.mjs",
     "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
     "preview": "vite preview"
   },

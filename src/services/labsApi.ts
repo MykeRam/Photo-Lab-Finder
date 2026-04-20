@@ -1,5 +1,7 @@
 import type { LabSearchInput, LabSearchResponse, PhotoLab } from "../types";
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() ?? "";
+
 async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
   const response = await fetch(input, init);
   const payload = await response.json();
@@ -9,6 +11,10 @@ async function requestJson<T>(input: RequestInfo | URL, init?: RequestInit) {
   }
 
   return payload as T;
+}
+
+function buildApiUrl(path: string) {
+  return apiBaseUrl ? new URL(path, apiBaseUrl).toString() : path;
 }
 
 export function fetchLabs(input: LabSearchInput, signal?: AbortSignal) {
@@ -30,20 +36,23 @@ export function fetchLabs(input: LabSearchInput, signal?: AbortSignal) {
   const endpoint =
     input.latitude !== null && input.longitude !== null ? "/api/labs/nearby" : "/api/labs/search";
 
-  return requestJson<LabSearchResponse>(`${endpoint}?${params.toString()}`, { signal });
+  return requestJson<LabSearchResponse>(buildApiUrl(`${endpoint}?${params.toString()}`), {
+    signal,
+  });
 }
 
 export async function fetchLabById(labId: string, signal?: AbortSignal) {
-  const payload = await requestJson<{ lab: PhotoLab }>(`/api/labs/${encodeURIComponent(labId)}`, {
-    signal,
-  });
+  const payload = await requestJson<{ lab: PhotoLab }>(
+    buildApiUrl(`/api/labs/${encodeURIComponent(labId)}`),
+    { signal },
+  );
 
   return payload.lab;
 }
 
 export function fetchGooglePlacePhoto(placeId: string, signal?: AbortSignal) {
   return requestJson<{ imageUrl: string | null; photoAttributions: string[] }>(
-    `/api/google-place-photo?placeId=${encodeURIComponent(placeId)}`,
+    buildApiUrl(`/api/google-place-photo?placeId=${encodeURIComponent(placeId)}`),
     { signal },
   );
 }

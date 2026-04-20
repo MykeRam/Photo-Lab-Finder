@@ -63,6 +63,35 @@ npm run dev
 
 The client runs with Vite and opens automatically. The API server runs alongside it on `127.0.0.1:8787` by default.
 
+## API deployment
+
+For deployment, use any Node host that supports environment variables and a long-running process. The server entry point is `server/index.mjs`, and the production start command is:
+
+```bash
+npm start
+```
+
+Make sure the host sets these environment variables:
+
+- `GOOGLE_PLACES_API_KEY`
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+- `FOURSQUARE_API_KEY` if you use it
+- `PLACES_PROVIDER_ORDER` if you want to override provider priority
+
+After deployment, the host will show a public service URL. That root URL is what you put into `VITE_API_BASE_URL`.
+
+## GitHub Pages deployment
+
+GitHub Pages can host the React frontend, but it cannot run the Express API in `server/`. To deploy the site on Pages:
+
+1. Host the API somewhere else first, or the search and detail views will not load data.
+1. Set `VITE_API_BASE_URL` to that hosted API URL in the Pages build environment.
+1. Set `VITE_GOOGLE_MAPS_API_KEY` in the build environment if you want the map to load in production.
+1. Push to `main`; the included GitHub Actions workflow builds `dist/` and publishes it to Pages.
+
+The app uses hash-based routing so direct links work on GitHub Pages without a custom rewrite rule.
+
 ## Available scripts
 
 - `npm run dev`
