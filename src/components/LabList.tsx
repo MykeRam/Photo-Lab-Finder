@@ -18,7 +18,7 @@ type LabListProps = {
   notesByLabId: NoteMap;
   savedCount: number;
   onHoverLab: (labId: string) => void;
-  onMatchCountChange: (count: number) => void;
+  onLiveNearbyCountChange: (count: number) => void;
   onPlaceSelect: (latitude: number, longitude: number) => void;
   onClearCurrentLocation: () => void;
   onToggleService: (service: LabService) => void;
@@ -40,7 +40,7 @@ export function LabList({
   notesByLabId,
   savedCount,
   onHoverLab,
-  onMatchCountChange,
+  onLiveNearbyCountChange,
   onPlaceSelect,
   onClearCurrentLocation,
   onToggleService,
@@ -62,8 +62,8 @@ export function LabList({
     [nearbyPlaces],
   );
   useEffect(() => {
-    onMatchCountChange(liveNearbyCount);
-  }, [liveNearbyCount, onMatchCountChange]);
+    onLiveNearbyCountChange(liveNearbyCount);
+  }, [liveNearbyCount, onLiveNearbyCountChange]);
 
   return (
     <div className="lab-list">

@@ -1,3 +1,4 @@
+import { HeartIcon } from "./HeartIcon";
 import "./FavoriteButton.css";
 
 type FavoriteButtonProps = {
@@ -19,8 +20,10 @@ export function FavoriteButton({
       className={isFavorite ? "favorite-button favorite-button--active" : "favorite-button"}
       onClick={onClick}
       aria-pressed={isFavorite}
+      aria-label={isFavorite ? savedLabel : defaultLabel}
+      title={isFavorite ? savedLabel : defaultLabel}
     >
-      {isFavorite ? savedLabel : defaultLabel}
+      <HeartIcon className="favorite-button__icon" filled={isFavorite} />
     </button>
   );
 }

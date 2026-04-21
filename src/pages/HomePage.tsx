@@ -39,7 +39,7 @@ export function HomePage({
   onToggleFavorite,
 }: HomePageProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [matchCount, setMatchCount] = useState(0);
+  const [liveNearbyCount, setLiveNearbyCount] = useState(0);
   const [selectedLabId, setSelectedLabId] = useState<string | null>(null);
   const browseRef = useRef<HTMLDivElement | null>(null);
   const query = searchParams.get("q") ?? "";
@@ -60,22 +60,17 @@ export function HomePage({
     latitude,
     longitude,
   );
-  const filteredLabs = labs;
 
   useEffect(() => {
-    if (filteredLabs.length === 0) {
+    if (labs.length === 0) {
       setSelectedLabId(null);
       return;
     }
 
-    if (!selectedLabId || !filteredLabs.some((lab) => lab.id === selectedLabId)) {
-      setSelectedLabId(filteredLabs[0].id);
+    if (!selectedLabId || !labs.some((lab) => lab.id === selectedLabId)) {
+      setSelectedLabId(labs[0].id);
     }
-  }, [filteredLabs, selectedLabId]);
-
-  useEffect(() => {
-    setMatchCount(filteredLabs.length);
-  }, [filteredLabs.length]);
+  }, [labs, selectedLabId]);
 
   function updateSearchParams(next: {
     latitude?: number | null;
@@ -196,7 +191,7 @@ export function HomePage({
           <section className="home-page__stats">
             <div className="home-page__stat home-page__stat--live">
               <span>Live nearby</span>
-              <strong>{matchCount}</strong>
+              <strong>{liveNearbyCount}</strong>
             </div>
             <Link className="home-page__stat home-page__stat--link" to="/saved">
               <span className="home-page__stat-label">
@@ -224,14 +219,13 @@ export function HomePage({
             activeLongitude={longitude}
             detailSearch={detailSearch}
             favoriteIds={favoriteIds}
-            labs={filteredLabs}
+            labs={labs}
             hasCurrentLocation={hasCurrentLocation}
             isLocating={isLocating}
             locationError={locationError}
             notesByLabId={notesByLabId}
             savedCount={savedCount}
             onHoverLab={setSelectedLabId}
-            onMatchCountChange={setMatchCount}
             onClearCurrentLocation={handleClearCurrentLocation}
             onPlaceSelect={(nextLatitude, nextLongitude) =>
               updateSearchParams({
@@ -240,6 +234,7 @@ export function HomePage({
                 q: "",
               })
             }
+            onLiveNearbyCountChange={setLiveNearbyCount}
             onToggleService={handleToggleService}
             onUseCurrentLocation={handleUseCurrentLocation}
             onToggleFavorite={onToggleFavorite}
