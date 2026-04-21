@@ -58,3 +58,13 @@
   background: #1d8b7e;
   color: #fffaf3;
 }
+
+@media (max-width: 720px) {
+  .filter-panel__intro > :not(.filter-panel__brand-image) {
+    display: none;
+  }
+
+  .filter-panel__services {
+    display: none;
+  }
+}

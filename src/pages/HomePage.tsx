@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, createSearchParams, useSearchParams } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
+import { HeartIcon } from "../components/HeartIcon";
 import { FilterPanel } from "../components/FilterPanel";
 import { LabList } from "../components/LabList";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -194,11 +195,14 @@ export function HomePage({
 
           <section className="home-page__stats">
             <div className="home-page__stat">
-              <span>Matches</span>
+              <span>Live nearby</span>
               <strong>{matchCount}</strong>
             </div>
             <Link className="home-page__stat home-page__stat--link" to="/saved">
-              <span>Saved Labs</span>
+              <span className="home-page__stat-label">
+                <HeartIcon className="home-page__stat-icon" />
+                Saved Labs
+              </span>
               <strong>{savedCount}</strong>
             </Link>
           </section>
@@ -214,26 +218,32 @@ export function HomePage({
           ) : null}
 
           {!isLoading && !error ? (
-            <LabList
-              activeServices={activeServices}
-              activeLatitude={latitude}
-              activeLongitude={longitude}
-              detailSearch={detailSearch}
-              favoriteIds={favoriteIds}
-              labs={filteredLabs}
-              notesByLabId={notesByLabId}
-              onHoverLab={setSelectedLabId}
-              onMatchCountChange={setMatchCount}
-              onPlaceSelect={(nextLatitude, nextLongitude) =>
-                updateSearchParams({
-                  latitude: nextLatitude,
-                  longitude: nextLongitude,
-                  q: "",
-                })
-              }
-              onToggleFavorite={onToggleFavorite}
-              selectedLabId={selectedLabId}
-            />
+          <LabList
+            activeServices={activeServices}
+            activeLatitude={latitude}
+            activeLongitude={longitude}
+            detailSearch={detailSearch}
+            favoriteIds={favoriteIds}
+            labs={filteredLabs}
+            hasCurrentLocation={hasCurrentLocation}
+            isLocating={isLocating}
+            locationError={locationError}
+            notesByLabId={notesByLabId}
+            onHoverLab={setSelectedLabId}
+            onMatchCountChange={setMatchCount}
+            onClearCurrentLocation={handleClearCurrentLocation}
+            onPlaceSelect={(nextLatitude, nextLongitude) =>
+              updateSearchParams({
+                latitude: nextLatitude,
+                longitude: nextLongitude,
+                q: "",
+              })
+            }
+            onToggleService={handleToggleService}
+            onUseCurrentLocation={handleUseCurrentLocation}
+            onToggleFavorite={onToggleFavorite}
+            selectedLabId={selectedLabId}
+          />
           ) : null}
         </section>
       </div>

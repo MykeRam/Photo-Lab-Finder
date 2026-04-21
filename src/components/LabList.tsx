@@ -12,10 +12,16 @@ type LabListProps = {
   detailSearch: string;
   favoriteIds: string[];
   labs: PhotoLab[];
+  hasCurrentLocation: boolean;
+  isLocating: boolean;
+  locationError: string | null;
   notesByLabId: NoteMap;
   onHoverLab: (labId: string) => void;
   onMatchCountChange: (count: number) => void;
   onPlaceSelect: (latitude: number, longitude: number) => void;
+  onClearCurrentLocation: () => void;
+  onToggleService: (service: LabService) => void;
+  onUseCurrentLocation: () => void;
   onToggleFavorite: (id: string) => void;
   selectedLabId: string | null;
 };
@@ -27,14 +33,21 @@ export function LabList({
   detailSearch,
   favoriteIds,
   labs,
+  hasCurrentLocation,
+  isLocating,
+  locationError,
   notesByLabId,
   onHoverLab,
   onMatchCountChange,
   onPlaceSelect,
+  onClearCurrentLocation,
+  onToggleService,
+  onUseCurrentLocation,
   onToggleFavorite,
   selectedLabId,
 }: LabListProps) {
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyMapPlace[]>([]);
+  const [liveNearbyCount, setLiveNearbyCount] = useState(0);
   const nearbyPlacesByMatchedLabId = useMemo(
     () =>
       nearbyPlaces.reduce<Record<string, NearbyMapPlace>>((accumulator, place) => {
@@ -46,14 +59,9 @@ export function LabList({
       }, {}),
     [nearbyPlaces],
   );
-  const matchCount = useMemo(
-    () => labs.length + nearbyPlaces.filter((place) => place.matchedLabId === null).length,
-    [labs.length, nearbyPlaces],
-  );
-
   useEffect(() => {
-    onMatchCountChange(matchCount);
-  }, [matchCount, onMatchCountChange]);
+    onMatchCountChange(liveNearbyCount);
+  }, [liveNearbyCount, onMatchCountChange]);
 
   return (
     <div className="lab-list">
@@ -63,9 +71,16 @@ export function LabList({
           activeLatitude={activeLatitude}
           activeLongitude={activeLongitude}
           detailSearch={detailSearch}
+          hasCurrentLocation={hasCurrentLocation}
           labs={labs}
+          isLocating={isLocating}
+          locationError={locationError}
+          onClearCurrentLocation={onClearCurrentLocation}
+          onLiveNearbyCountChange={setLiveNearbyCount}
           onNearbyPlacesChange={setNearbyPlaces}
           onPlaceSelect={onPlaceSelect}
+          onToggleService={onToggleService}
+          onUseCurrentLocation={onUseCurrentLocation}
           selectedLabId={selectedLabId}
         />
 

@@ -10,6 +10,7 @@ import {
 import { serviceLabels } from "../data/labs";
 import { fetchGooglePlacePhoto } from "../services/labsApi";
 import type { LabService, NearbyMapPlace, PhotoLab } from "../types";
+import { LocationButton } from "./LocationButton";
 import "./MapPanel.css";
 
 type MapPanelProps = {
@@ -17,9 +18,16 @@ type MapPanelProps = {
   activeLatitude: number | null;
   activeLongitude: number | null;
   detailSearch: string;
+  hasCurrentLocation: boolean;
   labs: PhotoLab[];
+  isLocating: boolean;
+  locationError: string | null;
+  onClearCurrentLocation: () => void;
   onNearbyPlacesChange: (places: NearbyMapPlace[]) => void;
+  onLiveNearbyCountChange: (count: number) => void;
   onPlaceSelect: (latitude: number, longitude: number) => void;
+  onToggleService: (service: LabService) => void;
+  onUseCurrentLocation: () => void;
   selectedLabId: string | null;
 };
 
@@ -69,6 +77,7 @@ const nearbyKeywordMap: Record<LabService, string> = {
   prints: "photo printing lab",
   sameDay: "same day film lab",
 };
+const services = Object.keys(serviceLabels) as LabService[];
 const nycBounds = {
   east: -73.7004,
   north: 40.9176,
@@ -164,9 +173,16 @@ export function MapPanel({
   activeLatitude,
   activeLongitude,
   detailSearch,
+  hasCurrentLocation,
+  isLocating,
+  locationError,
   labs,
+  onClearCurrentLocation,
   onNearbyPlacesChange,
+  onLiveNearbyCountChange,
   onPlaceSelect,
+  onToggleService,
+  onUseCurrentLocation,
   selectedLabId,
 }: MapPanelProps) {
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -299,6 +315,10 @@ export function MapPanel({
         })),
     );
   }, [markers, onNearbyPlacesChange]);
+
+  useEffect(() => {
+    onLiveNearbyCountChange(livePlaces.length);
+  }, [livePlaces.length, onLiveNearbyCountChange]);
 
   const handleMapLoad = useCallback((mapInstance: google.maps.Map) => {
     setMap(mapInstance);
@@ -566,15 +586,45 @@ export function MapPanel({
             onChange={(event) => setSearchValue(event.target.value)}
           />
         </Autocomplete>
+
+        <div className="map-panel__mobile-controls">
+          <LocationButton
+            active={hasCurrentLocation}
+            disabled={isLocating}
+            label={isLocating ? "Locating..." : hasCurrentLocation ? "Nearby Labs On" : "Use Current Location"}
+            onClick={onUseCurrentLocation}
+          />
+          {hasCurrentLocation ? (
+            <LocationButton active={false} label="Clear Nearby Search" onClick={onClearCurrentLocation} />
+          ) : null}
+
+          <section className="map-panel__mobile-services" aria-label="Service filters">
+            {services.map((service) => {
+              const isActive = activeServices.includes(service);
+
+              return (
+                <button
+                  key={service}
+                  type="button"
+                  className={isActive ? "map-panel__chip map-panel__chip--active" : "map-panel__chip"}
+                  onClick={() => onToggleService(service)}
+                >
+                  {serviceLabels[service]}
+                </button>
+              );
+            })}
+          </section>
+        </div>
+
         <div className="map-panel__status">
           <span>
             {liveSearchLoading
               ? "Refreshing nearby Google markers..."
-              : `${livePlaces.length} live nearby matches`}
+              : `${livePlaces.length} live nearby results`}
           </span>
-          <span>{labs.length} app records</span>
         </div>
         <p>Choose a place to recenter the map and load nearby photo labs across NYC.</p>
+        {locationError ? <p className="map-panel__mobile-error">{locationError}</p> : null}
         {liveSearchError ? <p className="map-panel__alert">{liveSearchError}</p> : null}
       </div>
 
