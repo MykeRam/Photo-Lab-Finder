@@ -15,6 +15,22 @@
   box-shadow: none;
 }
 
+.home-page__credit {
+  position: absolute;
+  top: clamp(16px, 2.5vw, 28px);
+  right: clamp(16px, 2.5vw, 28px);
+  z-index: 2;
+  color: #fffaf3;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.home-page__credit:hover {
+  text-decoration: underline;
+}
+
 .home-page__hero-media {
   position: absolute;
   inset: 0;
@@ -58,6 +74,12 @@
   box-shadow: 0 18px 50px rgba(30, 25, 20, 0.18);
   transform: translate(-50%, -50%);
   text-align: center;
+  opacity: 0;
+  animation: heroCardFadeIn 0.55s ease-out forwards;
+  --hero-panel-duration: 0.55s;
+  --hero-type-duration: 1.2s;
+  --hero-type-delay: var(--hero-panel-duration);
+  --hero-copy-delay: calc(var(--hero-panel-duration) + (var(--hero-type-duration) * 2));
 }
 
 .home-page__eyebrow {
@@ -69,12 +91,11 @@
   text-transform: uppercase;
 }
 
-.home-page__hero h1 {
-  margin: 0;
-  font-size: clamp(2.2rem, 5vw, 4.6rem);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  max-width: 11ch;
+.home-page__hero-title {
+  margin: 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 0.1em;
 }
 
 .home-page__copy {
@@ -82,6 +103,11 @@
   line-height: 1.6;
   color: rgba(30, 25, 20, 0.8);
   max-width: 58ch;
+  margin-inline: auto;
+  text-align: center;
+  opacity: 0;
+  transform: translate3d(0, 40px, 0);
+  animation: fadeInUp 0.8s ease-out forwards var(--hero-copy-delay);
 }
 
 .home-page__hero-link {
@@ -99,6 +125,75 @@
 .home-page__hero-link:hover {
   transform: translateY(-1px);
   opacity: 0.94;
+}
+
+.home-page__hero-title-line {
+  display: inline-block;
+  overflow: hidden;
+  border-right: 0.15em solid #cf7450;
+  white-space: nowrap;
+  width: 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(1.35rem, 2.2vw, 1.6rem);
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  animation:
+    typing var(--hero-type-duration) steps(18, end) forwards,
+    blink-caret var(--hero-type-duration) step-end forwards;
+  animation-delay:
+    var(--hero-type-delay),
+    var(--hero-type-delay);
+}
+
+.home-page__hero-title-line--second {
+  animation-delay:
+    calc(var(--hero-type-delay) + var(--hero-type-duration)),
+    calc(var(--hero-type-delay) + var(--hero-type-duration));
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+
+  50% {
+    border-color: #cf7450;
+  }
+}
+
+@keyframes heroCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .home-page__layout {
@@ -119,10 +214,6 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
-}
-
-.home-page__footer {
-  padding-top: 4px;
 }
 
 .home-page__stat {
@@ -187,6 +278,12 @@
     height: 100svh;
   }
 
+  .home-page__credit {
+    top: 14px;
+    right: 14px;
+    font-size: 0.82rem;
+  }
+
   .home-page__layout {
     width: min(100% - 20px, 1280px);
   }
@@ -199,13 +296,54 @@
     max-width: none;
     gap: 10px;
     transform: translate(-50%, -50%);
+    animation-duration: 0.55s;
   }
 
-  .home-page__hero h1 {
-    max-width: none;
+  .home-page__hero-title {
+    gap: 0.15em;
+  }
+
+  .home-page__hero-title-line {
+    width: auto;
+    overflow: visible;
+    border-right: 0;
+    white-space: normal;
+    animation: none;
+    font-family: inherit;
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+    letter-spacing: -0.03em;
   }
 
   .home-page__stats {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page__hero-copy {
+    opacity: 1;
+    animation: none;
+  }
+
+  .home-page__hero-title {
+    width: auto;
+    overflow: visible;
+    border-right: 0;
+    white-space: normal;
+    animation: none;
+  }
+
+  .home-page__hero-title-line {
+    width: auto;
+    overflow: visible;
+    border-right: 0;
+    white-space: normal;
+    animation: none;
+  }
+
+  .home-page__copy {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }

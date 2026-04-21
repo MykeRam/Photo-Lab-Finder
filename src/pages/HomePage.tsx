@@ -148,8 +148,24 @@ export function HomePage({
   return (
     <main className="home-page">
       <section className="home-page__hero">
+        <a
+          className="home-page__credit"
+          href="https://mykeram.github.io/Mykes-Photog/"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Developed by Michael Ramirez
+        </a>
+
         <div className="home-page__hero-copy">
-          <h1>Search and compare photo labs in NYC.</h1>
+          <h1 className="home-page__hero-title" aria-label="Search and compare photo labs in NYC">
+            <span className="home-page__hero-title-line home-page__hero-title-line--first">
+              Search and compare
+            </span>
+            <span className="home-page__hero-title-line home-page__hero-title-line--second">
+              photo labs in NYC
+            </span>
+          </h1>
           <p className="home-page__copy">
             Search by borough, neighborhood, ZIP, or your current location inside New York City,
             then compare nearby labs on a live map with a synced results list and saved notes.
@@ -186,17 +202,6 @@ export function HomePage({
               <strong>{savedCount}</strong>
             </Link>
           </section>
-
-          <footer className="home-page__footer">
-            <a
-              className="app-footer__link"
-              href="https://mykeram.github.io/Mykes-Photog/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Developed by Michael Ramirez
-            </a>
-          </footer>
         </aside>
 
         <section className="home-page__results" aria-live="polite">
