@@ -4,18 +4,30 @@
 }
 
 .saved-labs-page__header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 16px;
-  align-items: end;
+  align-items: center;
+  padding-top: 176px;
+}
+
+.saved-labs-page__logo {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  display: block;
+  width: min(100%, 260px);
+  height: auto;
+  transform: translateX(-50%);
 }
 
 .saved-labs-page__title {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin: 8px 0 0;
+  margin: 0;
+  justify-self: start;
 }
 
 .saved-labs-page__title-icon {
@@ -25,6 +37,7 @@
 }
 
 .saved-labs-page__back-link {
+  justify-self: end;
   display: inline-flex;
   align-items: center;
   min-height: 40px;
@@ -39,13 +52,46 @@
   text-decoration: underline;
 }
 
-.saved-labs-page__grid {
-  display: grid;
-  gap: 18px;
+@media (max-width: 720px) {
+  .saved-labs-page__header {
+    grid-template-columns: 1fr auto;
+    justify-items: stretch;
+    padding-top: 136px;
+  }
+
+  .saved-labs-page__title {
+    justify-self: start;
+  }
+
+  .saved-labs-page__back-link {
+    justify-self: end;
+  }
+
+  .saved-labs-page__logo {
+    width: min(100%, 220px);
+  }
 }
 
-@media (min-width: 900px) {
+.saved-labs-page__grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+  .saved-labs-page__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
   .saved-labs-page__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .saved-labs-page__grid {
+    grid-template-columns: 1fr;
   }
 }

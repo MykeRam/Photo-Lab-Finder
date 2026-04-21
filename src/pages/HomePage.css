@@ -20,15 +20,23 @@
   top: clamp(16px, 2.5vw, 28px);
   right: clamp(16px, 2.5vw, 28px);
   z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 250, 243, 0.28);
+  border-radius: 999px;
+  background: rgba(22, 18, 15, 0.3);
   color: #fffaf3;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   text-decoration: none;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
 }
 
 .home-page__credit:hover {
-  text-decoration: underline;
+  background: rgba(22, 18, 15, 0.42);
 }
 
 .home-page__hero-media {
@@ -296,7 +304,9 @@
   .home-page__credit {
     top: 14px;
     right: 14px;
-    font-size: 0.82rem;
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 0.8rem;
   }
 
   .home-page__layout {

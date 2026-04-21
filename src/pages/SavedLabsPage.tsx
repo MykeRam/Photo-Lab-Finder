@@ -8,6 +8,8 @@ import { fetchLabById } from "../services/labsApi";
 import type { NoteMap, PhotoLab } from "../types";
 import "./SavedLabsPage.css";
 
+const logoSrc = `${import.meta.env.BASE_URL}NYC-Photo-Lab-Logo.png`;
+
 type SavedLabsPageProps = {
   favoriteIds: string[];
   notesByLabId: NoteMap;
@@ -97,6 +99,7 @@ export function SavedLabsPage({
   return (
     <main className="saved-labs-page">
       <div className="saved-labs-page__header">
+        <img className="saved-labs-page__logo" src={logoSrc} alt="NYC Photo Lab Finder" />
         <h1 className="saved-labs-page__title">
           <HeartIcon className="saved-labs-page__title-icon" />
           Saved Labs

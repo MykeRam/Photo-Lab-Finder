@@ -7,7 +7,7 @@
   height: 40px;
   padding: 0;
   border: 1px solid rgba(30, 25, 20, 0.14);
-  border-radius: 999px;
+  border-radius: 10px;
   background: rgba(255, 253, 249, 0.92);
   color: rgba(30, 25, 20, 0.72);
 }
