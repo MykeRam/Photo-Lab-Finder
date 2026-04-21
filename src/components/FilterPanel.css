@@ -10,16 +10,16 @@
 
 .filter-panel__intro {
   display: grid;
-  justify-items: center;
+  justify-items: stretch;
   text-align: center;
 }
 
 .filter-panel__brand-image {
   display: block;
-  width: 100%;
+  width: calc(100% + 36px);
   max-width: none;
   height: auto;
-  margin: 0 0 14px;
+  margin: -18px -18px 14px;
 }
 
 .filter-panel__services {
