@@ -6,11 +6,18 @@
   background: rgba(255, 250, 243, 0.76);
 }
 
+.filter-panel__intro {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
 .filter-panel__brand-image {
   display: block;
-  width: min(180px, 70%);
+  width: 100%;
+  max-width: none;
   height: auto;
-  margin: 0 auto 14px;
+  margin: 0 0 14px;
 }
 
 .filter-panel__services {

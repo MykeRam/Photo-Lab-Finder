@@ -28,7 +28,7 @@ export function FilterPanel({
 }: FilterPanelProps) {
   return (
     <section className="filter-panel">
-      <div>
+      <div className="filter-panel__intro">
         <img className="filter-panel__brand-image" src={logoSrc} alt="NYC Photo Lab Finder" />
         <LocationButton
           active={hasCurrentLocation}
