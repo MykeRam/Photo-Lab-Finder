@@ -275,7 +275,10 @@
 
 @media (max-width: 720px) {
   .home-page__hero {
+    width: 100%;
     height: 100svh;
+    min-height: 100svh;
+    margin-left: 0;
   }
 
   .home-page__credit {
@@ -285,7 +288,8 @@
   }
 
   .home-page__layout {
-    width: min(100% - 20px, 1280px);
+    width: min(100% - 24px, 1280px);
+    margin: 0 auto;
   }
 
   .home-page__hero-copy {

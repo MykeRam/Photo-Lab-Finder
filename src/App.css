@@ -40,4 +40,8 @@
   .app-shell {
     width: min(100% - 20px, 1280px);
   }
+
+  .app-shell--home {
+    width: 100%;
+  }
 }
