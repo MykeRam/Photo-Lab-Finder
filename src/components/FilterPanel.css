@@ -60,6 +60,22 @@
 }
 
 @media (max-width: 720px) {
+  .filter-panel {
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .filter-panel__intro {
+    gap: 0;
+  }
+
+  .filter-panel__brand-image {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
   .filter-panel__intro > :not(.filter-panel__brand-image) {
     display: none;
   }

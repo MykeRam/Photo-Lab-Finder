@@ -16,6 +16,7 @@ type LabListProps = {
   isLocating: boolean;
   locationError: string | null;
   notesByLabId: NoteMap;
+  savedCount: number;
   onHoverLab: (labId: string) => void;
   onMatchCountChange: (count: number) => void;
   onPlaceSelect: (latitude: number, longitude: number) => void;
@@ -37,6 +38,7 @@ export function LabList({
   isLocating,
   locationError,
   notesByLabId,
+  savedCount,
   onHoverLab,
   onMatchCountChange,
   onPlaceSelect,
@@ -75,6 +77,7 @@ export function LabList({
           labs={labs}
           isLocating={isLocating}
           locationError={locationError}
+          savedCount={savedCount}
           onClearCurrentLocation={onClearCurrentLocation}
           onLiveNearbyCountChange={setLiveNearbyCount}
           onNearbyPlacesChange={setNearbyPlaces}

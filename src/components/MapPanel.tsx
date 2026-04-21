@@ -10,6 +10,7 @@ import {
 import { serviceLabels } from "../data/labs";
 import { fetchGooglePlacePhoto } from "../services/labsApi";
 import type { LabService, NearbyMapPlace, PhotoLab } from "../types";
+import { HeartIcon } from "./HeartIcon";
 import { LocationButton } from "./LocationButton";
 import "./MapPanel.css";
 
@@ -22,6 +23,7 @@ type MapPanelProps = {
   labs: PhotoLab[];
   isLocating: boolean;
   locationError: string | null;
+  savedCount: number;
   onClearCurrentLocation: () => void;
   onNearbyPlacesChange: (places: NearbyMapPlace[]) => void;
   onLiveNearbyCountChange: (count: number) => void;
@@ -177,6 +179,7 @@ export function MapPanel({
   isLocating,
   locationError,
   labs,
+  savedCount,
   onClearCurrentLocation,
   onNearbyPlacesChange,
   onLiveNearbyCountChange,
@@ -617,11 +620,18 @@ export function MapPanel({
         </div>
 
         <div className="map-panel__status">
-          <span>
+          <span className="map-panel__status-live">
             {liveSearchLoading
               ? "Refreshing nearby Google markers..."
               : `${livePlaces.length} live nearby results`}
           </span>
+          <Link className="map-panel__status-link" to="/saved">
+            <span className="map-panel__status-label">
+              <HeartIcon className="map-panel__status-icon" />
+              <strong>{savedCount}</strong>
+              Saved Labs
+            </span>
+          </Link>
         </div>
         <p>Choose a place to recenter the map and load nearby photo labs across NYC.</p>
         {locationError ? <p className="map-panel__mobile-error">{locationError}</p> : null}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
+import { HeartIcon } from "../components/HeartIcon";
 import { LabCard } from "../components/LabCard";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { fetchLabById } from "../services/labsApi";
@@ -96,9 +97,10 @@ export function SavedLabsPage({
   return (
     <main className="saved-labs-page">
       <div className="saved-labs-page__header">
-        <div>
-          <h1>Your shortlist</h1>
-        </div>
+        <h1 className="saved-labs-page__title">
+          <HeartIcon className="saved-labs-page__title-icon" />
+          Saved Labs
+        </h1>
         <Link className="saved-labs-page__back-link" to="/">
           Back to search
         </Link>

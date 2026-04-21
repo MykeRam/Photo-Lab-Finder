@@ -194,7 +194,7 @@ export function HomePage({
           />
 
           <section className="home-page__stats">
-            <div className="home-page__stat">
+            <div className="home-page__stat home-page__stat--live">
               <span>Live nearby</span>
               <strong>{matchCount}</strong>
             </div>
@@ -229,6 +229,7 @@ export function HomePage({
             isLocating={isLocating}
             locationError={locationError}
             notesByLabId={notesByLabId}
+            savedCount={savedCount}
             onHoverLab={setSelectedLabId}
             onMatchCountChange={setMatchCount}
             onClearCurrentLocation={handleClearCurrentLocation}

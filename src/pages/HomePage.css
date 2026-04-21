@@ -309,8 +309,10 @@
     left: 50%;
     right: auto;
     bottom: auto;
+    width: min(100% - 24px, 440px);
     max-width: none;
     gap: 10px;
+    padding: 16px 14px 18px;
     transform: translate(-50%, -50%);
     animation-duration: 0.55s;
   }
@@ -320,18 +322,12 @@
   }
 
   .home-page__hero-title-line {
-    width: auto;
-    overflow: visible;
-    border-right: 0;
-    white-space: normal;
-    animation: none;
-    font-family: inherit;
-    font-size: clamp(1.6rem, 7vw, 2.4rem);
-    letter-spacing: -0.03em;
+    font-size: clamp(1.35rem, 5.7vw, 1.85rem);
+    letter-spacing: -0.04em;
   }
 
   .home-page__stats {
-    grid-template-columns: 1fr;
+    display: none;
   }
 }
 
