@@ -13,9 +13,9 @@
 }
 
 .favorite-button--active {
-  border-color: #d0704c;
-  background: #d0704c;
-  color: #fffaf3;
+  border-color: rgba(30, 25, 20, 0.14);
+  background: rgba(255, 253, 249, 0.92);
+  color: #d0704c;
 }
 
 .favorite-button__icon {
