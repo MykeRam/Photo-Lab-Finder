@@ -55,10 +55,6 @@ export function LabDetailsPanel({
               <span>Rating</span>
               <strong>{lab.rating > 0 ? lab.rating.toFixed(1) : "No ratings yet"}</strong>
             </div>
-            <div className="lab-details-panel__meta-card">
-              <span>Source</span>
-              <strong>{lab.sourceLabel}</strong>
-            </div>
           </div>
 
           <div className="lab-details-panel__actions">

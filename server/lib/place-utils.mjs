@@ -144,13 +144,12 @@ export function inferServicesFromText(text, initialServices = []) {
 }
 
 export function buildDescription({ matchedServices, primaryType, borough, neighborhood, sourceLabel }) {
-  const locationText = [neighborhood, borough].filter(Boolean).join(", ");
-  const serviceText =
-    matchedServices.length > 0
-      ? ` ${matchedServices.map((service) => SERVICE_LABELS[service]).join(", ").toLowerCase()}`
-      : "";
+  const locationText = [neighborhood, borough]
+    .map((value) => value.trim())
+    .filter((value, index, values) => value && values.findIndex((candidate) => candidate.toLowerCase() === value.toLowerCase()) === index)
+    .join(", ");
 
-  return `${locationText || "New York City"} from ${sourceLabel}${primaryType ? ` · ${primaryType}` : ""}${serviceText}.`;
+  return `${locationText || "New York City"}.`;
 }
 
 export function normalizeBorough(rawBorough = "", formattedAddress = "") {

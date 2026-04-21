@@ -70,7 +70,6 @@ export function LabCard({
           <span>{lab.turnaround} turnaround</span>
           <span>{lab.priceTier}</span>
           <span>{lab.rating > 0 ? `${lab.rating.toFixed(1)} rating` : "No ratings yet"}</span>
-          <span>{lab.sourceLabel}</span>
         </div>
 
         <div className="lab-card__tags">
