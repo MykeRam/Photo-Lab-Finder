@@ -3,7 +3,9 @@
   gap: 18px;
   padding: 18px;
   border-radius: 8px;
-  background: rgba(255, 250, 243, 0.76);
+  border: 1px solid rgba(30, 25, 20, 0.16);
+  background: #fffdf9;
+  box-shadow: 0 8px 24px rgba(30, 25, 20, 0.08);
 }
 
 .filter-panel__intro {
@@ -44,10 +46,11 @@
 .filter-panel__chip {
   min-height: 40px;
   padding: 0 14px;
-  border: 1px solid rgba(30, 25, 20, 0.14);
+  border: 1px solid rgba(30, 25, 20, 0.18);
   border-radius: 8px;
-  background: rgba(255, 253, 249, 0.92);
+  background: #fffdf9;
   color: #1e1914;
+  box-shadow: 0 1px 0 rgba(30, 25, 20, 0.03);
 }
 
 .filter-panel__chip--active {

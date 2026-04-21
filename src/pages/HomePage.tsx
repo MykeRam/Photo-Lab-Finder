@@ -149,8 +149,7 @@ export function HomePage({
     <main className="home-page">
       <section className="home-page__hero">
         <div className="home-page__hero-copy">
-          <p className="home-page__eyebrow">NYC photo lab finder</p>
-          <h1>Search NYC labs on a live map with a synced shortlist.</h1>
+          <h1>Search and compare photo labs in NYC.</h1>
           <p className="home-page__copy">
             Search by borough, neighborhood, ZIP, or your current location inside New York City,
             then compare nearby labs on a live map with a synced results list and saved notes.

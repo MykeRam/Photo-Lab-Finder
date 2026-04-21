@@ -132,7 +132,9 @@
   align-content: start;
   padding: 18px;
   border-radius: 8px;
-  background: rgba(255, 250, 243, 0.76);
+  border: 1px solid rgba(30, 25, 20, 0.16);
+  background: #fffdf9;
+  box-shadow: 0 8px 24px rgba(30, 25, 20, 0.08);
 }
 
 .home-page__stat--link {
@@ -143,8 +145,8 @@
 
 .home-page__stat--link:hover {
   transform: translateY(-1px);
-  background: rgba(255, 250, 243, 0.92);
-  box-shadow: 0 10px 24px rgba(30, 25, 20, 0.08);
+  background: #fffaf3;
+  box-shadow: 0 12px 28px rgba(30, 25, 20, 0.12);
 }
 
 .home-page__stat--link:focus-visible {

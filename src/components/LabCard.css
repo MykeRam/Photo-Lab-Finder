@@ -2,7 +2,9 @@
   display: grid;
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(255, 250, 243, 0.82);
+  border: 1px solid rgba(30, 25, 20, 0.16);
+  background: #fffdf9;
+  box-shadow: 0 8px 24px rgba(30, 25, 20, 0.08);
 }
 
 .lab-card--row {
@@ -89,9 +91,9 @@
   width: fit-content;
   min-height: 40px;
   padding: 0 14px;
-  border: 1px solid rgba(30, 25, 20, 0.14);
+  border: 1px solid rgba(30, 25, 20, 0.18);
   border-radius: 8px;
-  background: rgba(255, 253, 249, 0.92);
+  background: #fffdf9;
   text-decoration: none;
 }
 
